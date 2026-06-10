@@ -1,1 +1,1 @@
-File di prova Torneo Rigori
+Tabellone live Torneo Rigori Andrate
