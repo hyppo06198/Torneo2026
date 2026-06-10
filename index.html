@@ -3,652 +3,189 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Torneo 2026 — 78 Squadre</title>
+<title>Tabellone Live — Torneo 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--green:#00c853;--green-dark:#009624;--pitch:#1a472a;--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#7d8590;--accent:#f0e130;--red:#ff4444;--orange:#ffaa00;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-/* HEADER */
-header{background:linear-gradient(135deg,var(--pitch) 0%,#0a2e1a 100%);border-bottom:3px solid var(--green);padding:16px 24px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
-.logo{font-family:'Bebas Neue',cursive;font-size:2.2rem;color:var(--accent);letter-spacing:2px;line-height:1;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+header{background:linear-gradient(135deg,var(--pitch) 0%,#0a2e1a 100%);border-bottom:3px solid var(--green);padding:14px 28px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.logo{font-family:'Bebas Neue',cursive;font-size:2rem;color:var(--accent);letter-spacing:2px;line-height:1;}
 .logo span{color:var(--green);}
-.header-kpi{margin-left:auto;display:flex;gap:20px;flex-wrap:wrap;align-items:center;}
-.kpi-item{text-align:center;font-size:0.75rem;color:var(--muted);}
-.kpi-item strong{color:var(--green);font-size:1.2rem;display:block;font-family:'Bebas Neue',cursive;}
-.kpi-top3{display:flex;flex-direction:column;gap:2px;font-size:0.72rem;color:var(--muted);border-left:1px solid var(--border);padding-left:16px;}
-.kpi-top3 .kpi-top3-title{color:var(--accent);font-weight:700;letter-spacing:1px;font-size:0.68rem;text-transform:uppercase;}
-/* NAV */
-nav{display:flex;gap:4px;padding:10px 24px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;}
-.tab{font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:1rem;padding:7px 18px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:6px;transition:all 0.15s;white-space:nowrap;}
-.tab:hover{color:var(--text);border-color:var(--green);}
-.tab.active{background:var(--green);color:#000;border-color:var(--green);}
-/* PAGES */
-.container{padding:20px 24px;max-width:1400px;margin:0 auto;}
-.page{display:none;}
-.page.active{display:block;}
-/* CARDS */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:0;}
-.card-header{padding:12px 16px;background:linear-gradient(90deg,var(--pitch),#0d2b1a);border-bottom:1px solid var(--green);font-family:'Bebas Neue',cursive;font-size:1.2rem;letter-spacing:2px;color:var(--accent);}
-.section-title{font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:2px;margin-bottom:14px;color:var(--accent);border-left:4px solid var(--green);padding-left:12px;}
-/* TABLES */
-table{width:100%;border-collapse:collapse;font-size:0.83rem;}
-thead th{padding:7px 9px;background:#1f2937;color:var(--muted);text-align:center;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600;}
-thead th.tl{text-align:left;padding-left:12px;}
-tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
-tbody tr:hover{background:rgba(0,200,83,0.04);}
-tbody tr:last-child{border-bottom:none;}
-tbody td{padding:8px 9px;text-align:center;font-variant-numeric:tabular-nums;}
-tbody td.tl{text-align:left;padding-left:12px;font-weight:500;}
-.pts-cell{font-weight:700;color:var(--green);}
-.dg-pos{color:var(--green);}
-.dg-neg{color:var(--red);}
-.pill{display:inline-block;padding:2px 7px;border-radius:10px;font-size:0.68rem;font-weight:600;background:rgba(0,200,83,0.15);color:var(--green);}
-/* GIRONI */
-.group-nav{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
-.group-tab{padding:6px 14px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:4px;font-family:'Bebas Neue',cursive;font-size:1.1rem;transition:all 0.15s;}
-.group-tab:hover{border-color:var(--green);color:var(--text);}
-.group-tab.active{background:var(--green);color:#000;border-color:var(--green);}
-.group-panel{display:none;}
-.group-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-@media(max-width:900px){.group-panel.active{grid-template-columns:1fr;}}
-/* MATCHES */
-.matches-list{padding:6px 0;}
-.match-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);transition:background 0.1s;}
-.match-row:hover{background:rgba(0,200,83,0.04);}
-.match-row:last-child{border-bottom:none;}
-.team-home{text-align:right;font-size:0.8rem;font-weight:500;}
-.team-away{text-align:left;font-size:0.8rem;font-weight:500;}
-.score-box{display:flex;align-items:center;gap:3px;background:#1f2937;border-radius:5px;border:1px solid var(--border);overflow:hidden;}
-.score-input{width:34px;height:28px;background:transparent;border:none;color:var(--text);text-align:center;font-family:'Bebas Neue',cursive;font-size:1.05rem;outline:none;}
-.score-input:focus{background:rgba(0,200,83,0.1);}
-.score-sep{color:var(--muted);font-family:'Bebas Neue',cursive;}
-/* TABELLONE */
-.tabellone-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
-@media(max-width:700px){.tabellone-grid{grid-template-columns:1fr;}}
-.live-badge{display:flex;align-items:center;gap:6px;background:rgba(255,68,68,0.12);border:1px solid rgba(255,68,68,0.4);color:#ff6b6b;padding:5px 12px;border-radius:20px;font-size:0.78rem;font-weight:600;letter-spacing:1px;}
-.live-dot{width:7px;height:7px;background:#ff4444;border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.live-badge{display:flex;align-items:center;gap:6px;background:rgba(255,68,68,0.12);border:1px solid rgba(255,68,68,0.4);color:#ff6b6b;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;letter-spacing:1px;}
+.live-dot{width:8px;height:8px;background:#ff4444;border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
+.last-update{font-size:0.72rem;color:var(--muted);font-style:italic;}
+.kpi-bar{display:flex;gap:28px;padding:10px 28px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+.kpi-item{text-align:center;font-size:0.75rem;color:var(--muted);}
+.kpi-item strong{color:var(--green);font-size:1.15rem;display:block;font-family:'Bebas Neue',cursive;}
+.kpi-top3{display:flex;flex-direction:column;gap:2px;font-size:0.72rem;color:var(--muted);border-left:1px solid var(--border);padding-left:20px;margin-left:8px;}
+.kpi-top3-title{color:var(--accent);font-weight:700;letter-spacing:1px;font-size:0.68rem;text-transform:uppercase;margin-bottom:2px;}
+.container{padding:18px 24px;max-width:1600px;margin:0 auto;}
+.tabellone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:1100px){.tabellone-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:660px){.tabellone-grid{grid-template-columns:1fr;}}
 .tb-group-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
 .tb-group-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(90deg,var(--pitch),#0d2b1a);border-bottom:2px solid var(--green);}
 .tb-group-label{font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:3px;color:var(--accent);}
 .tb-progress-wrap{font-size:0.72rem;color:var(--muted);text-align:right;}
 .tb-progress-bar{width:70px;height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
-.tb-progress-fill{height:4px;background:var(--green);border-radius:2px;transition:width 0.4s;}
-.tb-table{width:100%;border-collapse:collapse;font-size:0.78rem;}
+.tb-progress-fill{height:4px;background:var(--green);border-radius:2px;transition:width 0.6s ease;}
+.tb-table{width:100%;border-collapse:collapse;font-size:0.8rem;table-layout:fixed;}
 .tb-table thead th{padding:5px 7px;background:rgba(255,255,255,0.03);color:var(--muted);text-align:center;font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
-.tb-table thead th.tl{text-align:left;padding-left:9px;}
-.tb-table tbody tr{border-bottom:1px solid rgba(48,54,61,0.5);}
+.tb-table thead th.tl{text-align:left;padding-left:9px;width:42%;}
+.tb-table tbody tr{border-bottom:1px solid rgba(48,54,61,0.5);transition:background 0.4s;}
 .tb-table tbody tr:last-child{border-bottom:none;}
 .tb-table tbody td{padding:7px 7px;text-align:center;font-variant-numeric:tabular-nums;}
-.tb-table tbody td.tl{text-align:left;padding-left:9px;font-size:0.76rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0;}
+.tb-table tbody td.tl{text-align:left;padding-left:9px;font-size:0.78rem;font-weight:500;}
 .tb-footer{padding:7px 10px;border-top:1px solid var(--border);display:flex;gap:10px;font-size:0.67rem;color:var(--muted);background:rgba(0,0,0,0.15);flex-wrap:wrap;}
 .tb-legend{display:flex;align-items:center;gap:4px;}
 .tb-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-/* KO BRACKET */
-.ko-round-wrap{margin-bottom:28px;}
-.ko-round-title{font-family:'Bebas Neue',cursive;font-size:1.35rem;letter-spacing:2px;color:var(--accent);border-left:4px solid var(--green);padding-left:12px;margin-bottom:14px;}
-.ko-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;}
-.ko-match{background:var(--surface);border:1px solid var(--border);border-radius:9px;overflow:hidden;transition:border-color 0.15s;}
-.ko-match:hover{border-color:var(--green);}
-.ko-match-header{padding:4px 10px;background:rgba(0,0,0,0.3);font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-family:'Bebas Neue',cursive;}
-.ko-team-row{display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);gap:7px;transition:background 0.1s;}
-.ko-team-row:last-child{border-bottom:none;}
-.ko-team-row.winner{background:rgba(0,200,83,0.1);}
-.ko-team-row.loser{opacity:0.4;}
-.ko-group-badge{font-size:0.6rem;background:var(--border);color:var(--muted);padding:1px 4px;border-radius:3px;flex-shrink:0;}
-.ko-team-name{flex:1;font-size:0.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ko-score-input{width:36px;height:26px;background:#1f2937;border:1px solid var(--border);border-radius:4px;color:var(--text);text-align:center;font-family:'Bebas Neue',cursive;font-size:1.05rem;outline:none;flex-shrink:0;}
-.ko-score-input:focus{border-color:var(--green);background:rgba(0,200,83,0.08);}
-.ko-winner-badge{font-size:0.65rem;color:var(--green);font-weight:700;flex-shrink:0;}
-/* DASHBOARD */
-.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:22px;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;display:flex;align-items:center;gap:14px;}
-.stat-icon{width:48px;height:48px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
-.si-green{background:rgba(0,200,83,0.15);}
-.si-yellow{background:rgba(240,225,48,0.15);}
-.si-blue{background:rgba(96,165,250,0.15);}
-.stat-label{font-size:0.78rem;color:var(--muted);margin-bottom:3px;}
-.stat-value{font-family:'Bebas Neue',cursive;font-size:1.9rem;color:var(--text);line-height:1;}
-/* SAVE BAR */
-.save-bar{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
-.btn{font-family:'Bebas Neue',cursive;font-size:1rem;letter-spacing:1px;padding:10px 20px;border:none;border-radius:7px;cursor:pointer;transition:all 0.15s;box-shadow:0 3px 14px rgba(0,0,0,0.3);}
-.btn-green{background:var(--green);color:#000;}
-.btn-green:hover{background:var(--green-dark);}
-.btn-yellow{background:var(--accent);color:#000;}
-.btn-yellow:hover{filter:brightness(0.9);}
-.btn-gray{background:#30363d;color:var(--text);}
-.btn-gray:hover{background:#444c56;}
-.toast{position:fixed;bottom:76px;right:20px;background:var(--green);color:#000;padding:9px 18px;border-radius:6px;font-weight:600;font-size:0.88rem;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:300;}
-.toast.show{opacity:1;}
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@keyframes rowFlash{0%{background:rgba(0,200,83,0.3);}100%{background:transparent;}}
+.row-flash{animation:rowFlash 1.2s ease;}
+.conn-badge{font-size:0.68rem;padding:3px 10px;border-radius:12px;font-weight:600;letter-spacing:0.5px;}
+.conn-ok{background:rgba(0,200,83,0.15);color:var(--green);border:1px solid rgba(0,200,83,0.3);}
+.conn-err{background:rgba(255,68,68,0.15);color:#ff6b6b;border:1px solid rgba(255,68,68,0.3);}
 </style>
 </head>
 <body>
+
 <header>
   <div>
     <div class="logo">Torneo <span>2026</span></div>
-    <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">Gestione Campionato — 78 Squadre</div>
   </div>
-  <div class="header-kpi">
-    <div class="kpi-item"><strong id="h-played">0</strong>Partite giocate</div>
-    <div class="kpi-item"><strong id="h-goals">0</strong>Goal totali</div>
-    <div class="kpi-top3">
-      <span class="kpi-top3-title">Top 3</span>
-      <span id="h-top3-1" style="color:var(--muted)">—</span>
-      <span id="h-top3-2" style="color:var(--muted)">—</span>
-      <span id="h-top3-3" style="color:var(--muted)">—</span>
-    </div>
+  <div class="header-right">
+    <span class="conn-badge conn-ok" id="conn-badge">🔴 Connessione...</span>
+    <span class="last-update" id="last-update">In attesa di dati...</span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
   </div>
 </header>
-<nav>
-  <button class="tab active" onclick="showPage('dashboard',this)">🏠 Dashboard</button>
-  <button class="tab" onclick="showPage('tabellone',this)">📋 Tabellone Live</button>
-  <button class="tab" onclick="showPage('gironi',this)">⚽ Gironi</button>
-  <button class="tab" onclick="showPage('eliminatorie',this)">📐 Calcolo Eliminatorie</button>
-  <button class="tab" onclick="showPage('bracket',this)">🏆 Eliminatorie</button>
-  <button class="tab" onclick="showPage('classifica',this)">📊 Classifica Generale</button>
-</nav>
+
+<div class="kpi-bar">
+  <div class="kpi-item"><strong id="h-played">0</strong>Partite giocate</div>
+  <div class="kpi-item"><strong id="h-goals">0</strong>Goal totali</div>
+  <div class="kpi-top3">
+    <div class="kpi-top3-title">Top 3</div>
+    <span id="h-top3-1" style="color:var(--muted)">—</span>
+    <span id="h-top3-2" style="color:var(--muted)">—</span>
+    <span id="h-top3-3" style="color:var(--muted)">—</span>
+  </div>
+</div>
+
 <div class="container">
-
-  <!-- DASHBOARD -->
-  <div id="page-dashboard" class="page active">
-    <div class="dash-grid">
-      <div class="stat-card"><div class="stat-icon si-green">⚽</div><div><div class="stat-label">Squadre totali</div><div class="stat-value">78</div></div></div>
-      <div class="stat-card"><div class="stat-icon si-yellow">🏟️</div><div><div class="stat-label">Gironi</div><div class="stat-value">6</div></div></div>
-      <div class="stat-card"><div class="stat-icon si-blue">📅</div><div><div class="stat-label">Partite fase gironi</div><div class="stat-value">468</div></div></div>
-      <div class="stat-card"><div class="stat-icon si-green">🎯</div><div><div class="stat-label">Goal segnati</div><div class="stat-value" id="db-goals">0</div></div></div>
-    </div>
-    <div class="section-title">Stato Gironi</div>
-    <div class="dash-grid" id="dash-groups"></div>
-    <div class="section-title" style="margin-top:20px">Top Scorer per Girone</div>
-    <div class="dash-grid" id="dash-leaders"></div>
-  </div>
-
-  <!-- TABELLONE LIVE -->
-  <div id="page-tabellone" class="page">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-      <div class="section-title" style="margin-bottom:0">Tabellone Live — Tutti i Gironi</div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:0.72rem;color:var(--muted);font-style:italic" id="last-update"></span>
-        <div class="live-badge"><div class="live-dot"></div>LIVE</div>
-      </div>
-    </div>
-    <div class="tabellone-grid" id="tabellone-grid"></div>
-  </div>
-
-  <!-- GIRONI -->
-  <div id="page-gironi" class="page">
-    <div class="group-nav" id="group-nav"></div>
-    <div id="group-panels"></div>
-  </div>
-
-  <!-- CALCOLO ELIMINATORIE -->
-  <div id="page-eliminatorie" class="page">
-    <div class="section-title">Calcolo Eliminatorie</div>
-    <div id="bracket-calc"></div>
-  </div>
-
-  <!-- ELIMINATORIE INTERATTIVE -->
-  <div id="page-bracket" class="page">
-    <div class="section-title">Eliminatorie — Fase a Eliminazione Diretta</div>
-    <div id="ko-bracket"></div>
-  </div>
-
-  <!-- CLASSIFICA GENERALE -->
-  <div id="page-classifica" class="page">
-    <div class="section-title">Classifica Generale — Tutte le Squadre</div>
-    <div class="card">
-      <table>
-        <thead><tr>
-          <th>#</th><th class="tl">Squadra</th><th>Girone</th>
-          <th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th>
-        </tr></thead>
-        <tbody id="global-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
+  <div class="tabellone-grid" id="grid"></div>
 </div>
 
-<div class="save-bar">
-  <button class="btn btn-yellow" onclick="fillRandom()">🎲 Compila Casuale</button>
-  <button class="btn btn-green" onclick="saveData()">💾 Salva</button>
-  <button class="btn btn-gray" onclick="resetAll()">🗑️ Reset</button>
-</div>
-<div class="toast" id="toast">Salvato!</div>
+<script type="module">
+import { initializeApp }                        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue }            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-<script>
-// ===================== DATA =====================
+// ── Firebase config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyB8i5p62pV0YhvrXRKLpqZohgrrtBzGkPU",
+  authDomain: "tabellone-risultati.firebaseapp.com",
+  databaseURL: "https://tabellone-risultati-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tabellone-risultati",
+  storageBucket: "tabellone-risultati.firebasestorage.app",
+  messagingSenderId: "302458277734",
+  appId: "1:302458277734:web:4a35ba62b9f78b29a182a7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ── Teams ──
 const GROUPS = {
-  A: ["I RAGAZZI DEL BOA","REAL CAPRON","I MANETTA","LA LONGOBARDA 2","TIRO A CAMPARI","CARL TEAM","I CAVALIERI","GLI AMICI DI DINO","ATLETICO MA NON TROPPO","BOSNA IVREA","BELLA ZIPPO","BOSNA CHIVASSO","AMICI HOLLIGANI"],
-  B: ["I MESSI COMUNALI","THERMOELETTRA","BABBI NATALE","SU CUN VOJA","LUCKY STRIKER","REAL BARBERA","ER GRANDE FABREGAS","I SENZA TETTO","EMPOLIO ARMANI","TEAM MADDIO","I FINALISTI","I RAGAZZI DEL BAR","I WUST UN BUDDIN"],
-  C: ["INTER TREMPES","SVALVOLATI TEAM","ANONIMI","GAINA 4EVER","ASM SAN BERNARDO","PANINATE","SUS FC","MEJ KE GNENTE","CHIAVE FC","I RUSPA","FC GALATATALLY","KAPPA TEAM","FC VAGIAINA TEAM"],
-  D: ["COSCRITTI BORGO 09","PIVERONE","LE AQUILE","CUSCRIT DAL BURG","LA PERGAMENA CHALET THEY","777","ACCHIAPPA PILU","BORGO BISLACCO","QUINCYOLDSTYLE","PAGA IL TROMBA","FAMOI DA GARGAL","I BRASATI","THE WARRIORS"],
-  E: ["HERTA VERNELLO","ASTON BIRRA","LE CAGNE","I FITTEROL","FACCE DA BUDINO","REAL MADRINK","BAR ATLANTIC","FC LE SCHEDE","SCAPÀ DA CÀ","TELETABBIES","DEPORTIVO LA CADREGA","GLI INSABBIATI","BERLUSCA DORTMUND"],
-  F: ["AUTISTI PER CASO","I RIDICOLI","LOS BOMBATOS","REAL AMIS 1","PARIS SAINT CHAMPAGNE","REAL AMIS 2","BLASCO TEAM","CALIFORNIA GURLS","PANCAFFÈ","A.S.TEMI","ARMATA DEL GENERALE","CALABBBRIA SRL","LOS MATADORES"]
+  A:["I RAGAZZI DEL BOA","REAL CAPRON","I MANETTA","LA LONGOBARDA 2","TIRO A CAMPARI","CARL TEAM","I CAVALIERI","GLI AMICI DI DINO","ATLETICO MA NON TROPPO","BOSNA IVREA","BELLA ZIPPO","BOSNA CHIVASSO","AMICI HOLLIGANI"],
+  B:["I MESSI COMUNALI","THERMOELETTRA","BABBI NATALE","SU CUN VOJA","LUCKY STRIKER","REAL BARBERA","ER GRANDE FABREGAS","I SENZA TETTO","EMPOLIO ARMANI","TEAM MADDIO","I FINALISTI","I RAGAZZI DEL BAR","I WUST UN BUDDIN"],
+  C:["INTER TREMPES","SVALVOLATI TEAM","ANONIMI","GAINA 4EVER","ASM SAN BERNARDO","PANINATE","SUS FC","MEJ KE GNENTE","CHIAVE FC","I RUSPA","FC GALATATALLY","KAPPA TEAM","FC VAGIAINA TEAM"],
+  D:["COSCRITTI BORGO 09","PIVERONE","LE AQUILE","CUSCRIT DAL BURG","LA PERGAMENA CHALET THEY","777","ACCHIAPPA PILU","BORGO BISLACCO","QUINCYOLDSTYLE","PAGA IL TROMBA","FAMOI DA GARGAL","I BRASATI","THE WARRIORS"],
+  E:["HERTA VERNELLO","ASTON BIRRA","LE CAGNE","I FITTEROL","FACCE DA BUDINO","REAL MADRINK","BAR ATLANTIC","FC LE SCHEDE","SCAPÀ DA CÀ","TELETABBIES","DEPORTIVO LA CADREGA","GLI INSABBIATI","BERLUSCA DORTMUND"],
+  F:["AUTISTI PER CASO","I RIDICOLI","LOS BOMBATOS","REAL AMIS 1","PARIS SAINT CHAMPAGNE","REAL AMIS 2","BLASCO TEAM","CALIFORNIA GURLS","PANCAFFÈ","A.S.TEMI","ARMATA DEL GENERALE","CALABBBRIA SRL","LOS MATADORES"]
 };
 
-const MATCH_ORDER = {
-  A: [
-    ["AMICI HOLLIGANI","REAL CAPRON"],["BOSNA CHIVASSO","I MANETTA"],["BELLA ZIPPO","LA LONGOBARDA 2"],
-    ["BOSNA IVREA","TIRO A CAMPARI"],["ATLETICO MA NON TROPPO","CARL TEAM"],["GLI AMICI DI DINO","I CAVALIERI"],
-    ["I RAGAZZI DEL BOA","I MANETTA"],["AMICI HOLLIGANI","LA LONGOBARDA 2"],["BOSNA CHIVASSO","TIRO A CAMPARI"],
-    ["BELLA ZIPPO","CARL TEAM"],["BOSNA IVREA","I CAVALIERI"],["ATLETICO MA NON TROPPO","GLI AMICI DI DINO"],
-    ["REAL CAPRON","LA LONGOBARDA 2"],["I RAGAZZI DEL BOA","TIRO A CAMPARI"],["AMICI HOLLIGANI","CARL TEAM"],
-    ["BOSNA CHIVASSO","I CAVALIERI"],["BELLA ZIPPO","GLI AMICI DI DINO"],["BOSNA IVREA","ATLETICO MA NON TROPPO"],
-    ["I MANETTA","TIRO A CAMPARI"],["REAL CAPRON","CARL TEAM"],["I RAGAZZI DEL BOA","I CAVALIERI"],
-    ["AMICI HOLLIGANI","GLI AMICI DI DINO"],["BOSNA CHIVASSO","ATLETICO MA NON TROPPO"],["BELLA ZIPPO","BOSNA IVREA"],
-    ["LA LONGOBARDA 2","CARL TEAM"],["I MANETTA","I CAVALIERI"],["REAL CAPRON","GLI AMICI DI DINO"],
-    ["I RAGAZZI DEL BOA","ATLETICO MA NON TROPPO"],["AMICI HOLLIGANI","BOSNA IVREA"],["BOSNA CHIVASSO","BELLA ZIPPO"],
-    ["TIRO A CAMPARI","I CAVALIERI"],["LA LONGOBARDA 2","GLI AMICI DI DINO"],["I MANETTA","ATLETICO MA NON TROPPO"],
-    ["REAL CAPRON","BOSNA IVREA"],["I RAGAZZI DEL BOA","BELLA ZIPPO"],["AMICI HOLLIGANI","BOSNA CHIVASSO"],
-    ["CARL TEAM","GLI AMICI DI DINO"],["TIRO A CAMPARI","ATLETICO MA NON TROPPO"],["LA LONGOBARDA 2","BOSNA IVREA"],
-    ["I MANETTA","BELLA ZIPPO"],["REAL CAPRON","BOSNA CHIVASSO"],["I RAGAZZI DEL BOA","AMICI HOLLIGANI"],
-    ["I CAVALIERI","ATLETICO MA NON TROPPO"],["CARL TEAM","BOSNA IVREA"],["TIRO A CAMPARI","BELLA ZIPPO"],
-    ["LA LONGOBARDA 2","BOSNA CHIVASSO"],["I MANETTA","AMICI HOLLIGANI"],["REAL CAPRON","I RAGAZZI DEL BOA"],
-    ["GLI AMICI DI DINO","BOSNA IVREA"],["I CAVALIERI","BELLA ZIPPO"],["CARL TEAM","BOSNA CHIVASSO"],
-    ["TIRO A CAMPARI","AMICI HOLLIGANI"],["LA LONGOBARDA 2","I RAGAZZI DEL BOA"],["I MANETTA","REAL CAPRON"],
-    ["ATLETICO MA NON TROPPO","BELLA ZIPPO"],["GLI AMICI DI DINO","BOSNA CHIVASSO"],["I CAVALIERI","AMICI HOLLIGANI"],
-    ["CARL TEAM","I RAGAZZI DEL BOA"],["TIRO A CAMPARI","REAL CAPRON"],["LA LONGOBARDA 2","I MANETTA"],
-    ["BOSNA IVREA","BOSNA CHIVASSO"],["ATLETICO MA NON TROPPO","AMICI HOLLIGANI"],["GLI AMICI DI DINO","I RAGAZZI DEL BOA"],
-    ["I CAVALIERI","REAL CAPRON"],["CARL TEAM","I MANETTA"],["TIRO A CAMPARI","LA LONGOBARDA 2"],
-    ["BELLA ZIPPO","AMICI HOLLIGANI"],["BOSNA IVREA","I RAGAZZI DEL BOA"],["ATLETICO MA NON TROPPO","REAL CAPRON"],
-    ["GLI AMICI DI DINO","I MANETTA"],["I CAVALIERI","LA LONGOBARDA 2"],["CARL TEAM","TIRO A CAMPARI"],
-    ["BOSNA CHIVASSO","I RAGAZZI DEL BOA"],["BELLA ZIPPO","REAL CAPRON"],["BOSNA IVREA","I MANETTA"],
-    ["ATLETICO MA NON TROPPO","LA LONGOBARDA 2"],["GLI AMICI DI DINO","TIRO A CAMPARI"],["I CAVALIERI","CARL TEAM"]
-  ],
-  B: [
-    ["I WUST UN BUDDIN","THERMOELETTRA"],["I RAGAZZI DEL BAR","BABBI NATALE"],["I FINALISTI","SU CUN VOJA"],
-    ["TEAM MADDIO","LUCKY STRIKER"],["EMPOLIO ARMANI","REAL BARBERA"],["I SENZA TETTO","ER GRANDE FABREGAS"],
-    ["I MESSI COMUNALI","BABBI NATALE"],["I WUST UN BUDDIN","SU CUN VOJA"],["I RAGAZZI DEL BAR","LUCKY STRIKER"],
-    ["I FINALISTI","REAL BARBERA"],["TEAM MADDIO","ER GRANDE FABREGAS"],["EMPOLIO ARMANI","I SENZA TETTO"],
-    ["THERMOELETTRA","SU CUN VOJA"],["I MESSI COMUNALI","LUCKY STRIKER"],["I WUST UN BUDDIN","REAL BARBERA"],
-    ["I RAGAZZI DEL BAR","ER GRANDE FABREGAS"],["I FINALISTI","I SENZA TETTO"],["TEAM MADDIO","EMPOLIO ARMANI"],
-    ["BABBI NATALE","LUCKY STRIKER"],["THERMOELETTRA","REAL BARBERA"],["I MESSI COMUNALI","ER GRANDE FABREGAS"],
-    ["I WUST UN BUDDIN","I SENZA TETTO"],["I RAGAZZI DEL BAR","EMPOLIO ARMANI"],["I FINALISTI","TEAM MADDIO"],
-    ["SU CUN VOJA","REAL BARBERA"],["BABBI NATALE","ER GRANDE FABREGAS"],["THERMOELETTRA","I SENZA TETTO"],
-    ["I MESSI COMUNALI","EMPOLIO ARMANI"],["I WUST UN BUDDIN","TEAM MADDIO"],["I RAGAZZI DEL BAR","I FINALISTI"],
-    ["LUCKY STRIKER","ER GRANDE FABREGAS"],["SU CUN VOJA","I SENZA TETTO"],["BABBI NATALE","EMPOLIO ARMANI"],
-    ["THERMOELETTRA","TEAM MADDIO"],["I MESSI COMUNALI","I FINALISTI"],["I WUST UN BUDDIN","I RAGAZZI DEL BAR"],
-    ["REAL BARBERA","I SENZA TETTO"],["LUCKY STRIKER","EMPOLIO ARMANI"],["SU CUN VOJA","TEAM MADDIO"],
-    ["BABBI NATALE","I FINALISTI"],["THERMOELETTRA","I RAGAZZI DEL BAR"],["I MESSI COMUNALI","I WUST UN BUDDIN"],
-    ["ER GRANDE FABREGAS","EMPOLIO ARMANI"],["REAL BARBERA","TEAM MADDIO"],["LUCKY STRIKER","I FINALISTI"],
-    ["SU CUN VOJA","I RAGAZZI DEL BAR"],["BABBI NATALE","I WUST UN BUDDIN"],["THERMOELETTRA","I MESSI COMUNALI"],
-    ["I SENZA TETTO","TEAM MADDIO"],["ER GRANDE FABREGAS","I FINALISTI"],["REAL BARBERA","I RAGAZZI DEL BAR"],
-    ["LUCKY STRIKER","I WUST UN BUDDIN"],["SU CUN VOJA","I MESSI COMUNALI"],["BABBI NATALE","THERMOELETTRA"],
-    ["EMPOLIO ARMANI","I FINALISTI"],["I SENZA TETTO","I RAGAZZI DEL BAR"],["ER GRANDE FABREGAS","I WUST UN BUDDIN"],
-    ["REAL BARBERA","I MESSI COMUNALI"],["LUCKY STRIKER","THERMOELETTRA"],["SU CUN VOJA","BABBI NATALE"],
-    ["TEAM MADDIO","I RAGAZZI DEL BAR"],["EMPOLIO ARMANI","I WUST UN BUDDIN"],["I SENZA TETTO","I MESSI COMUNALI"],
-    ["ER GRANDE FABREGAS","THERMOELETTRA"],["REAL BARBERA","BABBI NATALE"],["LUCKY STRIKER","SU CUN VOJA"],
-    ["I FINALISTI","I WUST UN BUDDIN"],["TEAM MADDIO","I MESSI COMUNALI"],["EMPOLIO ARMANI","THERMOELETTRA"],
-    ["I SENZA TETTO","BABBI NATALE"],["ER GRANDE FABREGAS","SU CUN VOJA"],["REAL BARBERA","LUCKY STRIKER"],
-    ["I RAGAZZI DEL BAR","I MESSI COMUNALI"],["I FINALISTI","THERMOELETTRA"],["TEAM MADDIO","BABBI NATALE"],
-    ["EMPOLIO ARMANI","SU CUN VOJA"],["I SENZA TETTO","LUCKY STRIKER"],["ER GRANDE FABREGAS","REAL BARBERA"]
-  ],
-  C: [
-    ["FC VAGIAINA TEAM","SVALVOLATI TEAM"],["KAPPA TEAM","ANONIMI"],["FC GALATATALLY","GAINA 4EVER"],
-    ["I RUSPA","ASM SAN BERNARDO"],["CHIAVE FC","PANINATE"],["MEJ KE GNENTE","SUS FC"],
-    ["INTER TREMPES","ANONIMI"],["FC VAGIAINA TEAM","GAINA 4EVER"],["KAPPA TEAM","ASM SAN BERNARDO"],
-    ["FC GALATATALLY","PANINATE"],["I RUSPA","SUS FC"],["CHIAVE FC","MEJ KE GNENTE"],
-    ["SVALVOLATI TEAM","GAINA 4EVER"],["INTER TREMPES","ASM SAN BERNARDO"],["FC VAGIAINA TEAM","PANINATE"],
-    ["KAPPA TEAM","SUS FC"],["FC GALATATALLY","MEJ KE GNENTE"],["I RUSPA","CHIAVE FC"],
-    ["ANONIMI","ASM SAN BERNARDO"],["SVALVOLATI TEAM","PANINATE"],["INTER TREMPES","SUS FC"],
-    ["FC VAGIAINA TEAM","MEJ KE GNENTE"],["KAPPA TEAM","CHIAVE FC"],["FC GALATATALLY","I RUSPA"],
-    ["GAINA 4EVER","PANINATE"],["ANONIMI","SUS FC"],["SVALVOLATI TEAM","MEJ KE GNENTE"],
-    ["INTER TREMPES","CHIAVE FC"],["FC VAGIAINA TEAM","I RUSPA"],["KAPPA TEAM","FC GALATATALLY"],
-    ["ASM SAN BERNARDO","SUS FC"],["GAINA 4EVER","MEJ KE GNENTE"],["ANONIMI","CHIAVE FC"],
-    ["SVALVOLATI TEAM","I RUSPA"],["INTER TREMPES","FC GALATATALLY"],["FC VAGIAINA TEAM","KAPPA TEAM"],
-    ["PANINATE","MEJ KE GNENTE"],["ASM SAN BERNARDO","CHIAVE FC"],["GAINA 4EVER","I RUSPA"],
-    ["ANONIMI","FC GALATATALLY"],["SVALVOLATI TEAM","KAPPA TEAM"],["INTER TREMPES","FC VAGIAINA TEAM"],
-    ["SUS FC","CHIAVE FC"],["PANINATE","I RUSPA"],["ASM SAN BERNARDO","FC GALATATALLY"],
-    ["GAINA 4EVER","KAPPA TEAM"],["ANONIMI","FC VAGIAINA TEAM"],["SVALVOLATI TEAM","INTER TREMPES"],
-    ["MEJ KE GNENTE","I RUSPA"],["SUS FC","FC GALATATALLY"],["PANINATE","KAPPA TEAM"],
-    ["ASM SAN BERNARDO","FC VAGIAINA TEAM"],["GAINA 4EVER","INTER TREMPES"],["ANONIMI","SVALVOLATI TEAM"],
-    ["CHIAVE FC","FC GALATATALLY"],["MEJ KE GNENTE","KAPPA TEAM"],["SUS FC","FC VAGIAINA TEAM"],
-    ["PANINATE","INTER TREMPES"],["ASM SAN BERNARDO","SVALVOLATI TEAM"],["GAINA 4EVER","ANONIMI"],
-    ["I RUSPA","KAPPA TEAM"],["CHIAVE FC","FC VAGIAINA TEAM"],["MEJ KE GNENTE","INTER TREMPES"],
-    ["SUS FC","SVALVOLATI TEAM"],["PANINATE","ANONIMI"],["ASM SAN BERNARDO","GAINA 4EVER"],
-    ["FC GALATATALLY","FC VAGIAINA TEAM"],["I RUSPA","INTER TREMPES"],["CHIAVE FC","SVALVOLATI TEAM"],
-    ["MEJ KE GNENTE","ANONIMI"],["SUS FC","GAINA 4EVER"],["PANINATE","ASM SAN BERNARDO"],
-    ["KAPPA TEAM","INTER TREMPES"],["FC GALATATALLY","SVALVOLATI TEAM"],["I RUSPA","ANONIMI"],
-    ["CHIAVE FC","GAINA 4EVER"],["MEJ KE GNENTE","ASM SAN BERNARDO"],["SUS FC","PANINATE"]
-  ],
-  D: [
-    ["THE WARRIORS","PIVERONE"],["I BRASATI","LE AQUILE"],["FAMOI DA GARGAL","CUSCRIT DAL BURG"],
-    ["PAGA IL TROMBA","LA PERGAMENA CHALET THEY"],["QUINCYOLDSTYLE","777"],["BORGO BISLACCO","ACCHIAPPA PILU"],
-    ["COSCRITTI BORGO 09","LE AQUILE"],["THE WARRIORS","CUSCRIT DAL BURG"],["I BRASATI","LA PERGAMENA CHALET THEY"],
-    ["FAMOI DA GARGAL","777"],["PAGA IL TROMBA","ACCHIAPPA PILU"],["QUINCYOLDSTYLE","BORGO BISLACCO"],
-    ["PIVERONE","CUSCRIT DAL BURG"],["COSCRITTI BORGO 09","LA PERGAMENA CHALET THEY"],["THE WARRIORS","777"],
-    ["I BRASATI","ACCHIAPPA PILU"],["FAMOI DA GARGAL","BORGO BISLACCO"],["PAGA IL TROMBA","QUINCYOLDSTYLE"],
-    ["LE AQUILE","LA PERGAMENA CHALET THEY"],["PIVERONE","777"],["COSCRITTI BORGO 09","ACCHIAPPA PILU"],
-    ["THE WARRIORS","BORGO BISLACCO"],["I BRASATI","QUINCYOLDSTYLE"],["FAMOI DA GARGAL","PAGA IL TROMBA"],
-    ["CUSCRIT DAL BURG","777"],["LE AQUILE","ACCHIAPPA PILU"],["PIVERONE","BORGO BISLACCO"],
-    ["COSCRITTI BORGO 09","QUINCYOLDSTYLE"],["THE WARRIORS","PAGA IL TROMBA"],["I BRASATI","FAMOI DA GARGAL"],
-    ["LA PERGAMENA CHALET THEY","ACCHIAPPA PILU"],["CUSCRIT DAL BURG","BORGO BISLACCO"],["LE AQUILE","QUINCYOLDSTYLE"],
-    ["PIVERONE","PAGA IL TROMBA"],["COSCRITTI BORGO 09","FAMOI DA GARGAL"],["THE WARRIORS","I BRASATI"],
-    ["777","BORGO BISLACCO"],["LA PERGAMENA CHALET THEY","QUINCYOLDSTYLE"],["CUSCRIT DAL BURG","PAGA IL TROMBA"],
-    ["LE AQUILE","FAMOI DA GARGAL"],["PIVERONE","I BRASATI"],["COSCRITTI BORGO 09","THE WARRIORS"],
-    ["ACCHIAPPA PILU","QUINCYOLDSTYLE"],["777","PAGA IL TROMBA"],["LA PERGAMENA CHALET THEY","FAMOI DA GARGAL"],
-    ["CUSCRIT DAL BURG","I BRASATI"],["LE AQUILE","THE WARRIORS"],["PIVERONE","COSCRITTI BORGO 09"],
-    ["BORGO BISLACCO","PAGA IL TROMBA"],["ACCHIAPPA PILU","FAMOI DA GARGAL"],["777","I BRASATI"],
-    ["LA PERGAMENA CHALET THEY","THE WARRIORS"],["CUSCRIT DAL BURG","COSCRITTI BORGO 09"],["LE AQUILE","PIVERONE"],
-    ["QUINCYOLDSTYLE","FAMOI DA GARGAL"],["BORGO BISLACCO","I BRASATI"],["ACCHIAPPA PILU","THE WARRIORS"],
-    ["777","COSCRITTI BORGO 09"],["LA PERGAMENA CHALET THEY","PIVERONE"],["CUSCRIT DAL BURG","LE AQUILE"],
-    ["PAGA IL TROMBA","I BRASATI"],["QUINCYOLDSTYLE","THE WARRIORS"],["BORGO BISLACCO","COSCRITTI BORGO 09"],
-    ["ACCHIAPPA PILU","PIVERONE"],["777","LE AQUILE"],["LA PERGAMENA CHALET THEY","CUSCRIT DAL BURG"],
-    ["FAMOI DA GARGAL","THE WARRIORS"],["PAGA IL TROMBA","COSCRITTI BORGO 09"],["QUINCYOLDSTYLE","PIVERONE"],
-    ["BORGO BISLACCO","LE AQUILE"],["ACCHIAPPA PILU","CUSCRIT DAL BURG"],["777","LA PERGAMENA CHALET THEY"],
-    ["I BRASATI","COSCRITTI BORGO 09"],["FAMOI DA GARGAL","PIVERONE"],["PAGA IL TROMBA","LE AQUILE"],
-    ["QUINCYOLDSTYLE","CUSCRIT DAL BURG"],["BORGO BISLACCO","LA PERGAMENA CHALET THEY"],["ACCHIAPPA PILU","777"]
-  ],
-  E: [
-    ["BERLUSCA DORTMUND","ASTON BIRRA"],["GLI INSABBIATI","LE CAGNE"],["DEPORTIVO LA CADREGA","I FITTEROL"],
-    ["TELETABBIES","FACCE DA BUDINO"],["SCAPÀ DA CÀ","REAL MADRINK"],["FC LE SCHEDE","BAR ATLANTIC"],
-    ["HERTA VERNELLO","LE CAGNE"],["BERLUSCA DORTMUND","I FITTEROL"],["GLI INSABBIATI","FACCE DA BUDINO"],
-    ["DEPORTIVO LA CADREGA","REAL MADRINK"],["TELETABBIES","BAR ATLANTIC"],["SCAPÀ DA CÀ","FC LE SCHEDE"],
-    ["ASTON BIRRA","I FITTEROL"],["HERTA VERNELLO","FACCE DA BUDINO"],["BERLUSCA DORTMUND","REAL MADRINK"],
-    ["GLI INSABBIATI","BAR ATLANTIC"],["DEPORTIVO LA CADREGA","FC LE SCHEDE"],["TELETABBIES","SCAPÀ DA CÀ"],
-    ["LE CAGNE","FACCE DA BUDINO"],["ASTON BIRRA","REAL MADRINK"],["HERTA VERNELLO","BAR ATLANTIC"],
-    ["BERLUSCA DORTMUND","FC LE SCHEDE"],["GLI INSABBIATI","SCAPÀ DA CÀ"],["DEPORTIVO LA CADREGA","TELETABBIES"],
-    ["I FITTEROL","REAL MADRINK"],["LE CAGNE","BAR ATLANTIC"],["ASTON BIRRA","FC LE SCHEDE"],
-    ["HERTA VERNELLO","SCAPÀ DA CÀ"],["BERLUSCA DORTMUND","TELETABBIES"],["GLI INSABBIATI","DEPORTIVO LA CADREGA"],
-    ["FACCE DA BUDINO","BAR ATLANTIC"],["I FITTEROL","FC LE SCHEDE"],["LE CAGNE","SCAPÀ DA CÀ"],
-    ["ASTON BIRRA","TELETABBIES"],["HERTA VERNELLO","DEPORTIVO LA CADREGA"],["BERLUSCA DORTMUND","GLI INSABBIATI"],
-    ["REAL MADRINK","FC LE SCHEDE"],["FACCE DA BUDINO","SCAPÀ DA CÀ"],["I FITTEROL","TELETABBIES"],
-    ["LE CAGNE","DEPORTIVO LA CADREGA"],["ASTON BIRRA","GLI INSABBIATI"],["HERTA VERNELLO","BERLUSCA DORTMUND"],
-    ["BAR ATLANTIC","SCAPÀ DA CÀ"],["REAL MADRINK","TELETABBIES"],["FACCE DA BUDINO","DEPORTIVO LA CADREGA"],
-    ["I FITTEROL","GLI INSABBIATI"],["LE CAGNE","BERLUSCA DORTMUND"],["ASTON BIRRA","HERTA VERNELLO"],
-    ["FC LE SCHEDE","TELETABBIES"],["BAR ATLANTIC","DEPORTIVO LA CADREGA"],["REAL MADRINK","GLI INSABBIATI"],
-    ["FACCE DA BUDINO","BERLUSCA DORTMUND"],["I FITTEROL","HERTA VERNELLO"],["LE CAGNE","ASTON BIRRA"],
-    ["SCAPÀ DA CÀ","DEPORTIVO LA CADREGA"],["FC LE SCHEDE","GLI INSABBIATI"],["BAR ATLANTIC","BERLUSCA DORTMUND"],
-    ["REAL MADRINK","HERTA VERNELLO"],["FACCE DA BUDINO","ASTON BIRRA"],["I FITTEROL","LE CAGNE"],
-    ["TELETABBIES","GLI INSABBIATI"],["SCAPÀ DA CÀ","BERLUSCA DORTMUND"],["FC LE SCHEDE","HERTA VERNELLO"],
-    ["BAR ATLANTIC","ASTON BIRRA"],["REAL MADRINK","LE CAGNE"],["FACCE DA BUDINO","I FITTEROL"],
-    ["DEPORTIVO LA CADREGA","BERLUSCA DORTMUND"],["TELETABBIES","HERTA VERNELLO"],["SCAPÀ DA CÀ","ASTON BIRRA"],
-    ["FC LE SCHEDE","LE CAGNE"],["BAR ATLANTIC","I FITTEROL"],["REAL MADRINK","FACCE DA BUDINO"],
-    ["GLI INSABBIATI","HERTA VERNELLO"],["DEPORTIVO LA CADREGA","ASTON BIRRA"],["TELETABBIES","LE CAGNE"],
-    ["SCAPÀ DA CÀ","I FITTEROL"],["FC LE SCHEDE","FACCE DA BUDINO"],["BAR ATLANTIC","REAL MADRINK"]
-  ],
-  F: [
-    ["LOS MATADORES","I RIDICOLI"],["CALABBBRIA SRL","LOS BOMBATOS"],["ARMATA DEL GENERALE","REAL AMIS 1"],
-    ["A.S.TEMI","PARIS SAINT CHAMPAGNE"],["PANCAFFÈ","REAL AMIS 2"],["CALIFORNIA GURLS","BLASCO TEAM"],
-    ["AUTISTI PER CASO","LOS BOMBATOS"],["LOS MATADORES","REAL AMIS 1"],["CALABBBRIA SRL","PARIS SAINT CHAMPAGNE"],
-    ["ARMATA DEL GENERALE","REAL AMIS 2"],["A.S.TEMI","BLASCO TEAM"],["PANCAFFÈ","CALIFORNIA GURLS"],
-    ["I RIDICOLI","REAL AMIS 1"],["AUTISTI PER CASO","PARIS SAINT CHAMPAGNE"],["LOS MATADORES","REAL AMIS 2"],
-    ["CALABBBRIA SRL","BLASCO TEAM"],["ARMATA DEL GENERALE","CALIFORNIA GURLS"],["A.S.TEMI","PANCAFFÈ"],
-    ["LOS BOMBATOS","PARIS SAINT CHAMPAGNE"],["I RIDICOLI","REAL AMIS 2"],["AUTISTI PER CASO","BLASCO TEAM"],
-    ["LOS MATADORES","CALIFORNIA GURLS"],["CALABBBRIA SRL","PANCAFFÈ"],["ARMATA DEL GENERALE","A.S.TEMI"],
-    ["REAL AMIS 1","REAL AMIS 2"],["LOS BOMBATOS","BLASCO TEAM"],["I RIDICOLI","CALIFORNIA GURLS"],
-    ["AUTISTI PER CASO","PANCAFFÈ"],["LOS MATADORES","A.S.TEMI"],["CALABBBRIA SRL","ARMATA DEL GENERALE"],
-    ["PARIS SAINT CHAMPAGNE","BLASCO TEAM"],["REAL AMIS 1","CALIFORNIA GURLS"],["LOS BOMBATOS","PANCAFFÈ"],
-    ["I RIDICOLI","A.S.TEMI"],["AUTISTI PER CASO","ARMATA DEL GENERALE"],["LOS MATADORES","CALABBBRIA SRL"],
-    ["REAL AMIS 2","CALIFORNIA GURLS"],["PARIS SAINT CHAMPAGNE","PANCAFFÈ"],["REAL AMIS 1","A.S.TEMI"],
-    ["LOS BOMBATOS","ARMATA DEL GENERALE"],["I RIDICOLI","CALABBBRIA SRL"],["AUTISTI PER CASO","LOS MATADORES"],
-    ["BLASCO TEAM","PANCAFFÈ"],["REAL AMIS 2","A.S.TEMI"],["PARIS SAINT CHAMPAGNE","ARMATA DEL GENERALE"],
-    ["REAL AMIS 1","CALABBBRIA SRL"],["LOS BOMBATOS","LOS MATADORES"],["I RIDICOLI","AUTISTI PER CASO"],
-    ["CALIFORNIA GURLS","A.S.TEMI"],["BLASCO TEAM","ARMATA DEL GENERALE"],["REAL AMIS 2","CALABBBRIA SRL"],
-    ["PARIS SAINT CHAMPAGNE","LOS MATADORES"],["REAL AMIS 1","AUTISTI PER CASO"],["LOS BOMBATOS","I RIDICOLI"],
-    ["PANCAFFÈ","ARMATA DEL GENERALE"],["CALIFORNIA GURLS","CALABBBRIA SRL"],["BLASCO TEAM","LOS MATADORES"],
-    ["REAL AMIS 2","AUTISTI PER CASO"],["PARIS SAINT CHAMPAGNE","I RIDICOLI"],["REAL AMIS 1","LOS BOMBATOS"],
-    ["A.S.TEMI","CALABBBRIA SRL"],["PANCAFFÈ","LOS MATADORES"],["CALIFORNIA GURLS","AUTISTI PER CASO"],
-    ["BLASCO TEAM","I RIDICOLI"],["REAL AMIS 2","LOS BOMBATOS"],["PARIS SAINT CHAMPAGNE","REAL AMIS 1"],
-    ["ARMATA DEL GENERALE","LOS MATADORES"],["A.S.TEMI","AUTISTI PER CASO"],["PANCAFFÈ","I RIDICOLI"],
-    ["CALIFORNIA GURLS","LOS BOMBATOS"],["BLASCO TEAM","REAL AMIS 1"],["REAL AMIS 2","PARIS SAINT CHAMPAGNE"],
-    ["CALABBBRIA SRL","AUTISTI PER CASO"],["ARMATA DEL GENERALE","I RIDICOLI"],["A.S.TEMI","LOS BOMBATOS"],
-    ["PANCAFFÈ","REAL AMIS 1"],["CALIFORNIA GURLS","PARIS SAINT CHAMPAGNE"],["BLASCO TEAM","REAL AMIS 2"]
-  ]
-};
+const rowBg  = ['rgba(0,200,83,0.18)','rgba(0,200,83,0.12)','rgba(0,200,83,0.08)','rgba(0,200,83,0.05)','rgba(0,200,83,0.03)','rgba(255,170,0,0.10)'];
+const leftBar= ['#00c853','#00c853','#4caf50','#81c784','#a5d6a7','#ffaa00'];
+let prevPts  = {};
 
-function generateMatches(g) {
-  return MATCH_ORDER[g].map(([home,away]) => ({home, away, homeScore:null, awayScore:null}));
-}
-
-// ===================== STATE =====================
-let state = { matches:{}, ko:null };
-
-function freshKO() {
-  return {
-    r32: Array(16).fill(0).map(()=>({a:null,b:null,sa:null,sb:null})),
-    r16: Array(8).fill(0).map(()=>({a:null,b:null,sa:null,sb:null})),
-    qf:  Array(4).fill(0).map(()=>({a:null,b:null,sa:null,sb:null})),
-    sf:  Array(2).fill(0).map(()=>({a:null,b:null,sa:null,sb:null})),
-    final:{a:null,b:null,sa:null,sb:null},
-    third:{a:null,b:null,sa:null,sb:null}
-  };
-}
-
-function initState() {
-  const saved = localStorage.getItem('torneo2026');
-  if (saved) { try { state = JSON.parse(saved); if (!state.ko) state.ko = freshKO(); return; } catch(e){} }
-  Object.keys(GROUPS).forEach(g => { state.matches[g] = generateMatches(g); });
-  state.ko = freshKO();
-}
-
-function saveData() {
-  localStorage.setItem('torneo2026', JSON.stringify(state));
-  showToast('💾 Salvato!');
-}
-
-function resetAll() {
-  if (!confirm('Sei sicuro? Tutti i risultati verranno cancellati.')) return;
-  localStorage.removeItem('torneo2026');
-  Object.keys(GROUPS).forEach(g => { state.matches[g] = generateMatches(g); });
-  state.ko = freshKO();
-  updateAll();
-  showToast('🗑️ Dati resettati');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-function rnd(n){ return Math.floor(Math.random()*(n+1)); }
-
-function fillRandom() {
-  Object.keys(GROUPS).forEach(g => {
-    state.matches[g].forEach(m => { m.homeScore=rnd(4); m.awayScore=rnd(4); });
-  });
-  // populate r32 with qualifiers and random scores (no draws)
-  const {qualified} = getQualifiers();
-  const pairs = buildR32(qualified);
-  state.ko = freshKO();
-  pairs.forEach(([a,b],i) => {
-    state.ko.r32[i].a = a; state.ko.r32[i].b = b;
-    let sa,sb; do { sa=rnd(5); sb=rnd(5); } while(sa===sb);
-    state.ko.r32[i].sa=sa; state.ko.r32[i].sb=sb;
-  });
-  propagateKO();
-  updateAll();
-  showToast('🎲 Risultati casuali compilati!');
-}
-
-// ===================== STANDINGS =====================
-function getStandings(g) {
-  const teams=GROUPS[g], matches=state.matches[g]||[], tbl={};
-  teams.forEach(t => { tbl[t]={pts:0,g:0,v:0,n:0,p:0,gf:0,gs:0}; });
-  matches.forEach(m => {
-    if (m.homeScore===null||m.awayScore===null) return;
-    const h=m.homeScore, a=m.awayScore;
+// ── Standings calc ──
+function getStandings(g, matches) {
+  const tbl = {};
+  GROUPS[g].forEach(t => { tbl[t] = {pts:0,g:0,v:0,n:0,p:0,gf:0,gs:0}; });
+  (matches || []).forEach(m => {
+    if (m.homeScore == null || m.awayScore == null) return;
+    const h = +m.homeScore, a = +m.awayScore;
+    if (!tbl[m.home] || !tbl[m.away]) return;
     tbl[m.home].g++; tbl[m.away].g++;
-    tbl[m.home].gf+=h; tbl[m.home].gs+=a;
-    tbl[m.away].gf+=a; tbl[m.away].gs+=h;
-    if(h>a){tbl[m.home].v++;tbl[m.home].pts+=3;tbl[m.away].p++;}
-    else if(a>h){tbl[m.away].v++;tbl[m.away].pts+=3;tbl[m.home].p++;}
-    else{tbl[m.home].n++;tbl[m.away].n++;tbl[m.home].pts++;tbl[m.away].pts++;}
+    tbl[m.home].gf += h; tbl[m.home].gs += a;
+    tbl[m.away].gf += a; tbl[m.away].gs += h;
+    if (h > a)      { tbl[m.home].v++; tbl[m.home].pts += 3; tbl[m.away].p++; }
+    else if (a > h) { tbl[m.away].v++; tbl[m.away].pts += 3; tbl[m.home].p++; }
+    else            { tbl[m.home].n++; tbl[m.away].n++; tbl[m.home].pts++; tbl[m.away].pts++; }
   });
-  return Object.entries(tbl).map(([name,s])=>({name,...s,dg:s.gf-s.gs}))
-    .sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf||a.name.localeCompare(b.name));
+  return Object.entries(tbl)
+    .map(([name,s]) => ({name,...s,dg:s.gf-s.gs}))
+    .sort((a,b) => b.pts-a.pts || b.dg-a.dg || b.gf-a.gf || a.name.localeCompare(b.name));
 }
 
-// ===================== QUALIFIERS =====================
-function getQualifiers() {
-  const byRank={1:[],2:[],3:[],4:[],5:[],6:[]};
+// ── Render ──
+function render(state) {
+  // normalise: Firebase arrays come back as objects with numeric keys
+  const matches = {};
   Object.keys(GROUPS).forEach(g => {
-    getStandings(g).forEach((t,i) => {
-      if (i<6) byRank[i+1].push({...t, group:g, rank:i+1});
-    });
+    const raw = state && state.matches && state.matches[g];
+    if (!raw) { matches[g] = []; return; }
+    // if it's already an array keep it; otherwise convert object→array
+    matches[g] = Array.isArray(raw) ? raw : Object.values(raw);
   });
-  const best2sixths = [...byRank[6]].sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf).slice(0,2);
-  const qualified = [
-    ...byRank[1],...byRank[2],...byRank[3],...byRank[4],...byRank[5],
-    ...best2sixths.map(t=>({...t,rank:'best6'}))
-  ];
-  return {byRank, best2sixths, qualified};
-}
 
-function buildR32(qualified) {
-  // Sort by strength desc
-  const sorted = [...qualified].sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
-  const top = sorted.slice(0,16);   // seeds 1-16 (strongest)
-  const bot = sorted.slice(16).reverse(); // seeds 17-32, reversed so weakest faces strongest
-  const used = new Set();
-  const pairs = [];
-  for (let i=0; i<top.length; i++) {
-    const seed = top[i];
-    if (used.has(seed.name)) continue;
-    let opp = null;
-    // prefer no same group
-    for (let j=0; j<bot.length; j++) {
-      if (!used.has(bot[j].name) && bot[j].group!==seed.group) { opp=bot[j]; break; }
-    }
-    if (!opp) for (let j=0; j<bot.length; j++) { if (!used.has(bot[j].name)) { opp=bot[j]; break; } }
-    if (opp) { pairs.push([seed,opp]); used.add(seed.name); used.add(opp.name); }
-  }
-  return pairs;
-}
+  const grid = document.getElementById('grid');
+  let played = 0, goals = 0;
+  const allTeams = [];
 
-// ===================== KO LOGIC =====================
-function getWinner(m){ if(!m||m.sa===null||m.sb===null)return null; return m.sa>m.sb?m.a:m.sb>m.sa?m.b:null; }
-function getLoser(m){  if(!m||m.sa===null||m.sb===null)return null; return m.sa>m.sb?m.b:m.sb>m.sa?m.a:null; }
+  Object.keys(GROUPS).forEach(g => {
+    const ms   = matches[g];
+    const rows = getStandings(g, ms);
+    const tot  = ms.length;
+    const pld  = ms.filter(m => m.homeScore != null && m.awayScore != null).length;
+    const pct  = tot ? Math.round(pld / tot * 100) : 0;
+    played += pld;
+    ms.forEach(m => { if (m.homeScore != null && m.awayScore != null) goals += +m.homeScore + +m.awayScore; });
+    rows.forEach(r => allTeams.push({...r, group:g}));
 
-function propagateKO() {
-  const ko=state.ko;
-  // r32 → r16
-  for(let i=0;i<8;i++){
-    const a=getWinner(ko.r32[i*2]), b=getWinner(ko.r32[i*2+1]);
-    ko.r16[i].a=a; ko.r16[i].b=b;
-    if(!a||!b){ko.r16[i].sa=null;ko.r16[i].sb=null;}
-  }
-  // r16 → qf
-  for(let i=0;i<4;i++){
-    const a=getWinner(ko.r16[i*2]), b=getWinner(ko.r16[i*2+1]);
-    ko.qf[i].a=a; ko.qf[i].b=b;
-    if(!a||!b){ko.qf[i].sa=null;ko.qf[i].sb=null;}
-  }
-  // qf → sf
-  for(let i=0;i<2;i++){
-    const a=getWinner(ko.qf[i*2]), b=getWinner(ko.qf[i*2+1]);
-    ko.sf[i].a=a; ko.sf[i].b=b;
-    if(!a||!b){ko.sf[i].sa=null;ko.sf[i].sb=null;}
-  }
-  // sf → final + third
-  ko.final.a=getWinner(ko.sf[0]); ko.final.b=getWinner(ko.sf[1]);
-  ko.third.a=getLoser(ko.sf[0]);  ko.third.b=getLoser(ko.sf[1]);
-  if(!ko.final.a||!ko.final.b){ko.final.sa=null;ko.final.sb=null;}
-  if(!ko.third.a||!ko.third.b){ko.third.sa=null;ko.third.sb=null;}
-}
-
-function updateKOScore(round,idx,side,val) {
-  let m;
-  if(round==='r32') m=state.ko.r32[idx];
-  else if(round==='r16') m=state.ko.r16[idx];
-  else if(round==='qf') m=state.ko.qf[idx];
-  else if(round==='sf') m=state.ko.sf[idx];
-  else if(round==='final') m=state.ko.final;
-  else if(round==='third') m=state.ko.third;
-  if(!m) return;
-  const n=val===''?null:parseInt(val);
-  if(side==='a') m.sa=n; else m.sb=n;
-  propagateKO();
-  renderKOBracket();
-}
-
-// ===================== RENDER DASHBOARD =====================
-function renderDashboard() {
-  const dg=document.getElementById('dash-groups');
-  const dl=document.getElementById('dash-leaders');
-  dg.innerHTML=''; dl.innerHTML='';
-  Object.keys(GROUPS).forEach(g=>{
-    const matches=state.matches[g]||[];
-    const played=matches.filter(m=>m.homeScore!==null&&m.awayScore!==null).length;
-    const total=matches.length;
-    const pct=total?Math.round(played/total*100):0;
-    const top=getStandings(g)[0];
-    dg.innerHTML+=`<div class="card" style="padding:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="font-family:'Bebas Neue',cursive;font-size:1.3rem;color:var(--accent)">Girone ${g}</div>
-        <div style="font-size:0.76rem;color:var(--muted)">${played}/${total}</div>
-      </div>
-      <div style="background:var(--border);border-radius:3px;height:5px;margin-bottom:8px">
-        <div style="background:var(--green);height:5px;border-radius:3px;width:${pct}%;transition:width 0.3s"></div>
-      </div>
-      <div style="font-size:0.78rem;color:var(--muted)">1°: <strong style="color:var(--text)">${top?.name||'—'}</strong> <span class="pill">${top?.pts||0}pts</span></div>
-    </div>`;
-    const topG=getStandings(g).filter(r=>r.gf>0).sort((a,b)=>b.gf-a.gf)[0];
-    dl.innerHTML+=`<div class="card" style="padding:14px">
-      <div style="font-family:'Bebas Neue',cursive;font-size:0.9rem;color:var(--muted);margin-bottom:4px">Top Scorer — Girone ${g}</div>
-      <div style="font-weight:600;font-size:0.85rem">${topG?.name||'—'}</div>
-      <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">${topG?.gf||0} goal</div>
-    </div>`;
-  });
-}
-
-// ===================== RENDER TABELLONE =====================
-function renderTabellone() {
-  const grid=document.getElementById('tabellone-grid');
-  if(!grid) return;
-  const el=document.getElementById('last-update');
-  if(el) el.textContent='Aggiornato alle '+new Date().toLocaleTimeString('it-IT');
-  
-  grid.innerHTML='';
-  // row bg by rank index (0-based)
-  const rowBg=[
-    'rgba(0,200,83,0.18)','rgba(0,200,83,0.12)','rgba(0,200,83,0.08)',
-    'rgba(0,200,83,0.05)','rgba(0,200,83,0.03)','rgba(255,170,0,0.10)'
-  ];
-  const leftBar=['#00c853','#00c853','#4caf50','#81c784','#a5d6a7','#ffaa00'];
-  
-  Object.keys(GROUPS).forEach(g=>{
-    const rows=getStandings(g);
-    const matches=state.matches[g]||[];
-    const played=matches.filter(m=>m.homeScore!==null&&m.awayScore!==null).length;
-    const total=matches.length;
-    const pct=total?Math.round(played/total*100):0;
-    
-    const tbody=rows.map((r,i)=>{
-      const bg=i<rowBg.length?`background:${rowBg[i]};`:'';
-      const bar=i<leftBar.length?`border-left:3px solid ${leftBar[i]};`:'border-left:3px solid transparent;';
-      const rankCol=i===0?'var(--accent)':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--muted)';
-      const dgCol=r.dg>0?'var(--green)':r.dg<0?'var(--red)':'var(--muted)';
-      return `<tr style="${bg}${bar}">
-        <td><span style="font-family:'Bebas Neue',cursive;font-size:0.95rem;color:${rankCol}">${i+1}</span></td>
+    const tbody = rows.map((r,i) => {
+      const key = g+'-'+r.name;
+      const changed = prevPts[key] !== undefined && prevPts[key] !== r.pts;
+      prevPts[key] = r.pts;
+      const bg  = i < rowBg.length  ? `background:${rowBg[i]};`  : '';
+      const bar = i < leftBar.length ? `border-left:3px solid ${leftBar[i]};` : 'border-left:3px solid transparent;';
+      const rc  = i===0?'var(--accent)':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--muted)';
+      const dc  = r.dg>0?'var(--green)':r.dg<0?'var(--red)':'var(--muted)';
+      return `<tr class="${changed?'row-flash':''}" style="${bg}${bar}">
+        <td><span style="font-family:'Bebas Neue',cursive;font-size:.95rem;color:${rc}">${i+1}</span></td>
         <td class="tl" title="${r.name}">${r.name}</td>
         <td style="font-weight:700;color:var(--green)">${r.pts}</td>
         <td>${r.g}</td><td style="color:var(--green)">${r.v}</td>
         <td>${r.n}</td><td style="color:var(--red)">${r.p}</td>
         <td>${r.gf}</td><td>${r.gs}</td>
-        <td style="color:${dgCol}">${r.dg>0?'+':''}${r.dg}</td>
+        <td style="color:${dc}">${r.dg>0?'+':''}${r.dg}</td>
       </tr>`;
     }).join('');
-    
-    const card=document.createElement('div');
-    card.className='tb-group-card';
-    card.innerHTML=`
+
+    let card = document.getElementById('tb-card-'+g);
+    if (!card) { card = document.createElement('div'); card.id='tb-card-'+g; card.className='tb-group-card'; grid.appendChild(card); }
+    card.innerHTML = `
       <div class="tb-group-header">
         <div class="tb-group-label">Girone ${g}</div>
-        <div class="tb-progress-wrap">${played}/${total} partite
+        <div class="tb-progress-wrap">${pld}/${tot}
           <div class="tb-progress-bar"><div class="tb-progress-fill" style="width:${pct}%"></div></div>
         </div>
       </div>
       <table class="tb-table">
         <thead><tr>
-          <th>#</th><th class="tl">Squadra</th><th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th>
+          <th>#</th><th class="tl">Squadra</th>
+          <th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th>
         </tr></thead>
         <tbody>${tbody}</tbody>
       </table>
@@ -656,291 +193,37 @@ function renderTabellone() {
         <div class="tb-legend"><div class="tb-legend-dot" style="background:#00c853"></div>1°-5° Qualificati</div>
         <div class="tb-legend"><div class="tb-legend-dot" style="background:#ffaa00"></div>6° Playoff seste</div>
       </div>`;
-    grid.appendChild(card);
   });
-}
 
-setInterval(()=>{ if(document.getElementById('page-tabellone').classList.contains('active')) renderTabellone(); }, 5000);
-
-// ===================== RENDER GIRONI =====================
-function renderGironiPage() {
-  const nav=document.getElementById('group-nav');
-  const panels=document.getElementById('group-panels');
-  nav.innerHTML=''; panels.innerHTML='';
-  Object.keys(GROUPS).forEach((g,i)=>{
-    // nav button
-    const btn=document.createElement('button');
-    btn.className='group-tab'+(i===0?' active':'');
-    btn.textContent=`Girone ${g}`;
-    btn.onclick=()=>switchGroup(g);
-    nav.appendChild(btn);
-    // panel
-    const panel=document.createElement('div');
-    panel.className='group-panel'+(i===0?' active':'');
-    panel.id=`panel-${g}`;
-    panel.innerHTML=renderGroupPanel(g);
-    panels.appendChild(panel);
+  // KPI
+  allTeams.sort((a,b) => b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
+  document.getElementById('h-played').textContent = played;
+  document.getElementById('h-goals').textContent  = goals;
+  const colors = ['var(--accent)','#c0c0c0','#cd7f32'];
+  ['h-top3-1','h-top3-2','h-top3-3'].forEach((id,i) => {
+    const el = document.getElementById(id), t = allTeams[i];
+    if (t && t.g > 0) { el.textContent=`${i+1}. ${t.name} — ${t.pts}p`; el.style.color=colors[i]; el.style.fontWeight='600'; }
+    else              { el.textContent='—'; el.style.color='var(--muted)'; el.style.fontWeight='400'; }
   });
+
+  document.getElementById('last-update').textContent =
+    played > 0 ? 'Aggiornato alle '+new Date().toLocaleTimeString('it-IT') : 'In attesa di risultati...';
 }
 
-function renderGroupPanel(g) {
-  const matches=state.matches[g]||[];
-  const played=matches.filter(m=>m.homeScore!==null&&m.awayScore!==null).length;
-  return `
-    <div class="card">
-      <div class="card-header">Classifica Girone ${g}</div>
-      <div id="standings-${g}">${renderGroupStandings(g)}</div>
-    </div>
-    <div class="card">
-      <div class="card-header">Incontri Girone ${g} <span class="pill" id="played-${g}">${played}/${matches.length}</span></div>
-      <div class="matches-list">${renderMatches(g)}</div>
-    </div>`;
-}
+// ── Initial render with blank data so grid is never empty ──
+render(null);
 
-function renderGroupStandings(g) {
-  const rows=getStandings(g);
-  return `<table>
-    <thead><tr>
-      <th>#</th><th class="tl">Squadra</th><th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th>
-    </tr></thead>
-    <tbody>${rows.map((r,i)=>`<tr>
-      <td><span style="font-family:'Bebas Neue',cursive;color:${i===0?'var(--accent)':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--muted)'}">${i+1}</span></td>
-      <td class="tl">${r.name}</td>
-      <td class="pts-cell">${r.pts}</td>
-      <td>${r.g}</td><td>${r.v}</td><td>${r.n}</td><td>${r.p}</td>
-      <td>${r.gf}</td><td>${r.gs}</td>
-      <td class="${r.dg>0?'dg-pos':r.dg<0?'dg-neg':''}">${r.dg>0?'+':''}${r.dg}</td>
-    </tr>`).join('')}</tbody></table>`;
-}
-
-function renderMatches(g) {
-  return (state.matches[g]||[]).map((m,idx)=>`
-    <div class="match-row">
-      <div class="team-home">${m.home}</div>
-      <div class="score-box">
-        <input class="score-input" type="number" min="0" max="99"
-          value="${m.homeScore!==null?m.homeScore:''}" placeholder="–"
-          oninput="updateScore('${g}',${idx},'home',this.value)">
-        <span class="score-sep">:</span>
-        <input class="score-input" type="number" min="0" max="99"
-          value="${m.awayScore!==null?m.awayScore:''}" placeholder="–"
-          oninput="updateScore('${g}',${idx},'away',this.value)">
-      </div>
-      <div class="team-away">${m.away}</div>
-    </div>`).join('');
-}
-
-function switchGroup(g) {
-  document.querySelectorAll('.group-tab').forEach((b,i)=>b.classList.toggle('active',Object.keys(GROUPS)[i]===g));
-  document.querySelectorAll('.group-panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${g}`));
-}
-
-function updateScore(g,idx,side,val) {
-  const m=state.matches[g][idx];
-  const n=val===''?null:parseInt(val);
-  if(side==='home') m.homeScore=n; else m.awayScore=n;
-  // update standings inline
-  const sEl=document.getElementById(`standings-${g}`);
-  if(sEl) sEl.innerHTML=renderGroupStandings(g);
-  // update played count
-  const played=(state.matches[g]||[]).filter(m=>m.homeScore!==null&&m.awayScore!==null).length;
-  const pEl=document.getElementById(`played-${g}`);
-  if(pEl) pEl.textContent=`${played}/${state.matches[g].length}`;
-  // update header KPI + classifica + tabellone
-  updateHeaderKPI();
-  renderGlobalStandings();
-  renderTabellone();
-  renderCalcolo();
-}
-
-// ===================== HEADER KPI =====================
-function updateHeaderKPI() {
-  let played=0,goals=0;
-  const all=[];
-  Object.keys(GROUPS).forEach(g=>{
-    (state.matches[g]||[]).forEach(m=>{
-      if(m.homeScore!==null&&m.awayScore!==null){ played++; goals+=m.homeScore+m.awayScore; }
-    });
-    getStandings(g).forEach(r=>all.push({...r,group:g}));
-  });
-  all.sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
-  document.getElementById('h-played').textContent=played;
-  document.getElementById('h-goals').textContent=goals;
-  document.getElementById('db-goals').textContent=goals;
-  const colors=['var(--accent)','#c0c0c0','#cd7f32'];
-  ['h-top3-1','h-top3-2','h-top3-3'].forEach((id,i)=>{
-    const el=document.getElementById(id); if(!el) return;
-    const t=all.find((_,j)=>j===i);
-    if(t&&t.g>0){ el.textContent=`${i+1}. ${t.name} — ${t.pts}p`; el.style.color=colors[i]; el.style.fontWeight='600'; }
-    else { el.textContent='—'; el.style.color='var(--muted)'; el.style.fontWeight='400'; }
-  });
-}
-
-// ===================== GLOBAL STANDINGS =====================
-function renderGlobalStandings() {
-  const all=[];
-  Object.keys(GROUPS).forEach(g=>getStandings(g).forEach(r=>all.push({...r,group:g})));
-  all.sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
-  document.getElementById('global-tbody').innerHTML=all.map((r,i)=>`<tr>
-    <td>${i+1}</td><td class="tl">${r.name}</td>
-    <td><span class="pill">${r.group}</span></td>
-    <td class="pts-cell">${r.pts}</td>
-    <td>${r.g}</td><td>${r.v}</td><td>${r.n}</td><td>${r.p}</td>
-    <td>${r.gf}</td><td>${r.gs}</td>
-    <td class="${r.dg>0?'dg-pos':r.dg<0?'dg-neg':''}">${r.dg>0?'+':''}${r.dg}</td>
-  </tr>`).join('');
-}
-
-// ===================== CALCOLO ELIMINATORIE =====================
-function renderCalcolo() {
-  const el=document.getElementById('bracket-calc');
-  if(!el) return;
-  const anyPlayed=Object.keys(GROUPS).some(g=>(state.matches[g]||[]).some(m=>m.homeScore!==null));
-  if(!anyPlayed){
-    el.innerHTML=`<div style="padding:40px;text-align:center;color:var(--muted)">
-      <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:1.4rem;color:var(--text);margin-bottom:6px">Nessun dato disponibile</div>
-      <div style="font-size:0.88rem">Compila i risultati dei gironi o usa <strong style="color:var(--accent)">🎲 Compila Casuale</strong></div>
-    </div>`; return;
-  }
-  const {byRank,best2sixths,qualified}=getQualifiers();
-  const pairs=buildR32(qualified);
-  const rankColors={1:'var(--accent)',2:'#c0c0c0',3:'#cd7f32',4:'var(--green)',5:'#4caf50',best6:'#ffaa00'};
-  const rankLabel={1:'1°',2:'2°',3:'3°',4:'4°',5:'5°',best6:'Miglior 6°'};
-  
-  const qualHtml=`<div class="card" style="margin-bottom:20px">
-    <div class="card-header">✅ 32 Squadre Qualificate ai Sedicesimi</div>
-    <div style="padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:7px">
-      ${[...qualified].sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf).map((t,i)=>`
-        <div style="display:flex;align-items:center;gap:9px;padding:7px 11px;background:var(--bg);border-radius:5px;border:1px solid var(--border)">
-          <span style="font-family:'Bebas Neue',cursive;font-size:1.05rem;min-width:22px;text-align:center;color:${rankColors[t.rank]||'var(--muted)'}">${i+1}</span>
-          <div style="flex:1;min-width:0">
-            <div style="font-weight:600;font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.name}</div>
-            <div style="font-size:0.68rem;color:var(--muted)">Girone ${t.group} · <span style="color:${rankColors[t.rank]||'var(--muted)'}">${rankLabel[t.rank]||t.rank}</span> · <strong style="color:var(--green)">${t.pts}pts</strong></div>
-          </div>
-        </div>`).join('')}
-    </div>
-  </div>`;
-
-  const sixths=[...byRank[6]].sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
-  const sixthHtml=`<div class="card" style="margin-bottom:20px">
-    <div class="card-header">📊 Classifica Seste Classificate — le 2 migliori si qualificano</div>
-    <table>
-      <thead><tr><th>#</th><th class="tl">Squadra</th><th>Girone</th><th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th><th></th></tr></thead>
-      <tbody>${sixths.map((t,i)=>`<tr style="background:${i<2?'rgba(255,170,0,0.08)':'transparent'}">
-        <td><span style="font-family:'Bebas Neue',cursive;color:${i<2?'#ffaa00':'var(--muted)'}">${i+1}</span></td>
-        <td class="tl">${t.name}</td>
-        <td><span class="pill">${t.group}</span></td>
-        <td class="pts-cell">${t.pts}</td>
-        <td>${t.g}</td><td style="color:var(--green)">${t.v}</td><td>${t.n}</td><td style="color:var(--red)">${t.p}</td>
-        <td>${t.gf}</td><td>${t.gs}</td>
-        <td class="${t.dg>0?'dg-pos':t.dg<0?'dg-neg':''}">${t.dg>0?'+':''}${t.dg}</td>
-        <td>${i<2?'<span style="color:#ffaa00;font-weight:700;font-size:0.75rem">✅ PASS</span>':'<span style="color:var(--muted);font-size:0.75rem">❌</span>'}</td>
-      </tr>`).join('')}</tbody>
-    </table>
-  </div>`;
-
-  const pairsHtml=`<div class="card">
-    <div class="card-header">⚔️ Accoppiamenti Sedicesimi — migliore vs peggiore, no stesso girone</div>
-    <div style="padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">
-      ${pairs.map(([a,b],i)=>`<div>
-        <div style="font-size:0.65rem;color:var(--muted);letter-spacing:1px;margin-bottom:4px;font-family:'Bebas Neue',cursive">Gara ${i+1}</div>
-        <div class="card" style="border-radius:7px">
-          <div class="match-team" style="background:rgba(0,200,83,0.04)">
-            <span><span style="font-size:0.62rem;background:var(--border);padding:1px 4px;border-radius:3px;margin-right:5px;color:var(--muted)">${a.group}</span>${a.name}</span>
-            <span style="font-family:'Bebas Neue',cursive;color:var(--accent)">${a.pts}p</span>
-          </div>
-          <div class="match-team">
-            <span><span style="font-size:0.62rem;background:var(--border);padding:1px 4px;border-radius:3px;margin-right:5px;color:var(--muted)">${b.group}</span>${b.name}</span>
-            <span style="font-family:'Bebas Neue',cursive;color:var(--accent)">${b.pts}p</span>
-          </div>
-        </div>
-      </div>`).join('')}
-    </div>
-  </div>`;
-
-  el.innerHTML=qualHtml+sixthHtml+pairsHtml;
-}
-
-// ===================== KO BRACKET =====================
-function renderKOBracket() {
-  const container=document.getElementById('ko-bracket');
-  if(!container) return;
-  const ko=state.ko;
-
-  function teamRow(m,side,round,idx) {
-    const t=side==='a'?m.a:m.b, s=side==='a'?m.sa:m.sb, os=side==='a'?m.sb:m.sa;
-    const hasRes=m.sa!==null&&m.sb!==null;
-    const isW=hasRes&&s>os, isL=hasRes&&s<os;
-    const name=t?t.name:'—', grp=t?t.group:'';
-    return `<div class="ko-team-row ${isW?'winner':''} ${isL?'loser':''}">
-      ${grp?`<span class="ko-group-badge">${grp}</span>`:''}
-      <span class="ko-team-name" title="${name}">${name}</span>
-      <input class="ko-score-input" type="number" min="0" max="99"
-        value="${s!==null?s:''}" placeholder="–" ${!t?'disabled':''}
-        oninput="updateKOScore('${round}',${idx},'${side}',this.value)">
-      ${isW?'<span class="ko-winner-badge">✓</span>':'<span style="width:14px"></span>'}
-    </div>`;
-  }
-
-  function matchCard(m,round,idx,label) {
-    return `<div class="ko-match">
-      <div class="ko-match-header">${label}</div>
-      ${teamRow(m,'a',round,idx)}
-      ${teamRow(m,'b',round,idx)}
-    </div>`;
-  }
-
-  function roundHtml(title,matches,round) {
-    return `<div class="ko-round-wrap">
-      <div class="ko-round-title">${title}</div>
-      <div class="ko-grid">${matches.map((m,i)=>matchCard(m,round,i,`Gara ${i+1}`)).join('')}</div>
-    </div>`;
-  }
-
-  const champ=getWinner(ko.final);
-  const champHtml=champ?`<div style="text-align:center;padding:20px;margin-bottom:24px;background:linear-gradient(135deg,#1a2e1a,#0a1a0a);border-radius:10px;border:2px solid var(--accent)">
-    <div style="font-size:1.8rem;margin-bottom:6px">🏆</div>
-    <div style="font-family:'Bebas Neue',cursive;font-size:2.2rem;color:var(--accent);letter-spacing:3px">${champ.name}</div>
-    <div style="font-size:0.82rem;color:var(--muted);margin-top:3px">CAMPIONE DEL TORNEO 2026</div>
-  </div>`:'';
-
-  container.innerHTML=champHtml
-    +roundHtml('⚔️ Sedicesimi di Finale (32 squadre)',ko.r32,'r32')
-    +roundHtml('🔰 Ottavi di Finale',ko.r16,'r16')
-    +roundHtml('⚡ Quarti di Finale',ko.qf,'qf')
-    +roundHtml('🔥 Semifinali',ko.sf,'sf')
-    +`<div class="ko-round-wrap">
-      <div class="ko-round-title">🏆 Finale &amp; 3° Posto</div>
-      <div class="ko-grid">
-        ${matchCard(ko.final,'final',0,'🏆 Finale')}
-        ${matchCard(ko.third,'third',0,'🥉 3° Posto')}
-      </div>
-    </div>`;
-}
-
-// ===================== NAV =====================
-function showPage(page,btn) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(`page-${page}`).classList.add('active');
-  if(btn) btn.classList.add('active');
-}
-
-// ===================== UPDATE ALL =====================
-function updateAll() {
-  renderDashboard();
-  renderTabellone();
-  renderGlobalStandings();
-  renderCalcolo();
-  renderKOBracket();
-  updateHeaderKPI();
-  renderGironiPage();
-}
-
-// ===================== INIT =====================
-initState();
-updateAll();
+// ── Firebase listener — fires immediately and on every change ──
+const connBadge = document.getElementById('conn-badge');
+onValue(ref(db, 'torneo'), snapshot => {
+  connBadge.textContent = '🟢 Connesso';
+  connBadge.className   = 'conn-badge conn-ok';
+  render(snapshot.val());
+}, err => {
+  connBadge.textContent = '🔴 Offline';
+  connBadge.className   = 'conn-badge conn-err';
+  console.warn('Firebase error:', err);
+});
 </script>
 </body>
 </html>
