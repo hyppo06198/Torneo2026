@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabellone Live — Torneo 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#00c853;--green-dark:#009624;--pitch:#1a472a;--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#7d8590;--accent:#f0e130;--red:#ff4444;--orange:#ffaa00;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+header{background:linear-gradient(135deg,var(--pitch) 0%,#0a2e1a 100%);border-bottom:3px solid var(--green);padding:14px 28px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.logo{font-family:'Bebas Neue',cursive;font-size:2rem;color:var(--accent);letter-spacing:2px;line-height:1;}
+.logo span{color:var(--green);}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.live-badge{display:flex;align-items:center;gap:6px;background:rgba(255,68,68,0.12);border:1px solid rgba(255,68,68,0.4);color:#ff6b6b;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;letter-spacing:1px;}
+.live-dot{width:8px;height:8px;background:#ff4444;border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.7);}}
+.last-update{font-size:0.72rem;color:var(--muted);font-style:italic;}
+.kpi-bar{display:flex;gap:28px;padding:10px 28px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+.kpi-item{text-align:center;font-size:0.75rem;color:var(--muted);}
+.kpi-item strong{color:var(--green);font-size:1.15rem;display:block;font-family:'Bebas Neue',cursive;}
+.kpi-top3{display:flex;flex-direction:column;gap:2px;font-size:0.72rem;color:var(--muted);border-left:1px solid var(--border);padding-left:20px;margin-left:8px;}
+.kpi-top3-title{color:var(--accent);font-weight:700;letter-spacing:1px;font-size:0.68rem;text-transform:uppercase;margin-bottom:2px;}
+.container{padding:18px 24px;max-width:1600px;margin:0 auto;}
+.tabellone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:1100px){.tabellone-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:660px){.tabellone-grid{grid-template-columns:1fr;}}
+.tb-group-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.tb-group-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(90deg,var(--pitch),#0d2b1a);border-bottom:2px solid var(--green);}
+.tb-group-label{font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:3px;color:var(--accent);}
+.tb-progress-wrap{font-size:0.72rem;color:var(--muted);text-align:right;}
+.tb-progress-bar{width:70px;height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
+.tb-progress-fill{height:4px;background:var(--green);border-radius:2px;transition:width 0.6s ease;}
+.tb-table{width:100%;border-collapse:collapse;font-size:0.8rem;table-layout:fixed;}
+.tb-table thead th{padding:5px 7px;background:rgba(255,255,255,0.03);color:var(--muted);text-align:center;font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.tb-table thead th.tl{text-align:left;padding-left:9px;width:42%;}
+.tb-table tbody tr{border-bottom:1px solid rgba(48,54,61,0.5);transition:background 0.4s;}
+.tb-table tbody tr:last-child{border-bottom:none;}
+.tb-table tbody td{padding:7px 7px;text-align:center;font-variant-numeric:tabular-nums;}
+.tb-table tbody td.tl{text-align:left;padding-left:9px;font-size:0.78rem;font-weight:500;}
+.tb-footer{padding:7px 10px;border-top:1px solid var(--border);display:flex;gap:10px;font-size:0.67rem;color:var(--muted);background:rgba(0,0,0,0.15);flex-wrap:wrap;}
+.tb-legend{display:flex;align-items:center;gap:4px;}
+.tb-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+@keyframes rowFlash{0%{background:rgba(0,200,83,0.3);}100%{background:transparent;}}
+.row-flash{animation:rowFlash 1.2s ease;}
+.conn-badge{font-size:0.68rem;padding:3px 10px;border-radius:12px;font-weight:600;letter-spacing:0.5px;}
+.conn-ok{background:rgba(0,200,83,0.15);color:var(--green);border:1px solid rgba(0,200,83,0.3);}
+.conn-err{background:rgba(255,68,68,0.15);color:#ff6b6b;border:1px solid rgba(255,68,68,0.3);}
+/* KO bracket display */
+.ko-round-wrap{margin-bottom:28px;}
+.ko-round-title{font-family:'Bebas Neue',cursive;font-size:1.35rem;letter-spacing:2px;color:var(--accent);border-left:4px solid var(--green);padding-left:11px;margin-bottom:12px;}
+.ko-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;}
+.ko-match{background:var(--surface);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.ko-match-header{padding:4px 10px;background:rgba(0,0,0,0.3);font-size:0.62rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-family:'Bebas Neue',cursive;}
+.ko-team-row{display:flex;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);gap:7px;}
+.ko-team-row:last-of-type{border-bottom:none;}
+.ko-team-row.winner{background:rgba(0,200,83,0.1);}
+.ko-team-row.loser{opacity:0.4;}
+.ko-group-badge{font-size:0.6rem;background:var(--border);color:var(--muted);padding:1px 4px;border-radius:3px;flex-shrink:0;}
+.ko-team-name{flex:1;font-size:0.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ko-score{font-family:'Bebas Neue',cursive;font-size:1.2rem;color:var(--accent);min-width:22px;text-align:right;flex-shrink:0;}
+.ko-campo-row{display:flex;align-items:center;gap:6px;padding:4px 10px 5px;border-top:1px solid var(--border);background:rgba(0,0,0,0.15);font-size:0.7rem;color:var(--muted);}
+.champ-banner{text-align:center;padding:20px;margin-bottom:24px;background:linear-gradient(135deg,#1a2e1a,#0a1a0a);border-radius:10px;border:2px solid var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Torneo <span>2026</span></div>
+  </div>
+  <div class="header-right">
+    <span class="conn-badge conn-ok" id="conn-badge">🔴 Connessione...</span>
+    <span class="last-update" id="last-update">In attesa di dati...</span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+</header>
+
+<div class="kpi-bar">
+  <div class="kpi-item"><strong id="h-played">0</strong>Partite giocate</div>
+  <div class="kpi-item"><strong id="h-goals">0</strong>Goal totali</div>
+  <div class="kpi-top3">
+    <div class="kpi-top3-title">Top 3</div>
+    <span id="h-top3-1" style="color:var(--muted)">—</span>
+    <span id="h-top3-2" style="color:var(--muted)">—</span>
+    <span id="h-top3-3" style="color:var(--muted)">—</span>
+  </div>
+</div>
+
+<nav style="display:flex;gap:4px;padding:9px 24px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;">
+  <button id="tab-gironi" onclick="switchTab('gironi')" style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:.95rem;padding:6px 16px;border:1px solid var(--green);background:var(--green);color:#000;border-radius:5px;cursor:pointer;white-space:nowrap;">📋 Gironi</button>
+  <button id="tab-eliminatorie" onclick="switchTab('eliminatorie')" style="font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:.95rem;padding:6px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:5px;cursor:pointer;white-space:nowrap;">🏆 Eliminatorie</button>
+</nav>
+<div class="container">
+  <div id="section-gironi"><div class="tabellone-grid" id="grid"></div></div>
+  <div id="section-eliminatorie" style="display:none"></div>
+</div>
+
+<script type="module">
+import { initializeApp }                        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue }            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ── Firebase config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyB8i5p62pV0YhvrXRKLpqZohgrrtBzGkPU",
+  authDomain: "tabellone-risultati.firebaseapp.com",
+  databaseURL: "https://tabellone-risultati-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tabellone-risultati",
+  storageBucket: "tabellone-risultati.firebasestorage.app",
+  messagingSenderId: "302458277734",
+  appId: "1:302458277734:web:4a35ba62b9f78b29a182a7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ── Teams ──
+const GROUPS = {
+  A:["I RAGAZZI DEL BOA","REAL CAPRON","I MANETTA","LA LONGOBARDA 2","TIRO A CAMPARI","CARL TEAM","I CAVALIERI","GLI AMICI DI DINO","ATLETICO MA NON TROPPO","BOSNA IVREA","BELLA ZIPPO","BOSNA CHIVASSO","AMICI HOLLIGANI"],
+  B:["I MESSI COMUNALI","THERMOELETTRA","BABBI NATALE","SU CUN VOJA","LUCKY STRIKER","REAL BARBERA","ER GRANDE FABREGAS","I SENZA TETTO","EMPOLIO ARMANI","TEAM MADDIO","I FINALISTI","I RAGAZZI DEL BAR","I WUST UN BUDDIN"],
+  C:["INTER TREMPES","SVALVOLATI TEAM","ANONIMI","GAINA 4EVER","ASM SAN BERNARDO","PANINATE","SUS FC","MEJ KE GNENTE","CHIAVE FC","I RUSPA","FC GALATATALLY","KAPPA TEAM","FC VAGIAINA TEAM"],
+  D:["COSCRITTI BORGO 09","PIVERONE","LE AQUILE","CUSCRIT DAL BURG","LA PERGAMENA CHALET THEY","777","ACCHIAPPA PILU","BORGO BISLACCO","QUINCYOLDSTYLE","PAGA IL TROMBA","FAMOI DA GARGAL","I BRASATI","THE WARRIORS"],
+  E:["HERTA VERNELLO","ASTON BIRRA","LE CAGNE","I FITTEROL","FACCE DA BUDINO","REAL MADRINK","BAR ATLANTIC","FC LE SCHEDE","SCAPÀ DA CÀ","TELETABBIES","DEPORTIVO LA CADREGA","GLI INSABBIATI","BERLUSCA DORTMUND"],
+  F:["AUTISTI PER CASO","I RIDICOLI","LOS BOMBATOS","REAL AMIS 1","PARIS SAINT CHAMPAGNE","REAL AMIS 2","BLASCO TEAM","CALIFORNIA GURLS","PANCAFFÈ","A.S.TEMI","ARMATA DEL GENERALE","CALABBBRIA SRL","LOS MATADORES"]
+};
+
+const rowBg  = ['rgba(0,200,83,0.18)','rgba(0,200,83,0.12)','rgba(0,200,83,0.08)','rgba(0,200,83,0.05)','rgba(0,200,83,0.03)','rgba(255,170,0,0.10)'];
+const leftBar= ['#00c853','#00c853','#4caf50','#81c784','#a5d6a7','#ffaa00'];
+let prevPts  = {};
+
+// ── Standings calc ──
+function getStandings(g, matches) {
+  const tbl = {};
+  GROUPS[g].forEach(t => { tbl[t] = {pts:0,g:0,v:0,n:0,p:0,gf:0,gs:0}; });
+  (matches || []).forEach(m => {
+    if (m.homeScore == null || m.awayScore == null) return;
+    const h = +m.homeScore, a = +m.awayScore;
+    if (!tbl[m.home] || !tbl[m.away]) return;
+    tbl[m.home].g++; tbl[m.away].g++;
+    tbl[m.home].gf += h; tbl[m.home].gs += a;
+    tbl[m.away].gf += a; tbl[m.away].gs += h;
+    if (h > a)      { tbl[m.home].v++; tbl[m.home].pts += 3; tbl[m.away].p++; }
+    else if (a > h) { tbl[m.away].v++; tbl[m.away].pts += 3; tbl[m.home].p++; }
+    else            { tbl[m.home].n++; tbl[m.away].n++; tbl[m.home].pts++; tbl[m.away].pts++; }
+  });
+  return Object.entries(tbl)
+    .map(([name,s]) => ({name,...s,dg:s.gf-s.gs}))
+    .sort((a,b) => b.pts-a.pts || b.dg-a.dg || b.gf-a.gf || a.name.localeCompare(b.name));
+}
+
+// ── Render ──
+function render(state) {
+  // normalise: Firebase arrays come back as objects with numeric keys
+  const matches = {};
+  Object.keys(GROUPS).forEach(g => {
+    const raw = state && state.matches && state.matches[g];
+    if (!raw) { matches[g] = []; return; }
+    // if it's already an array keep it; otherwise convert object→array
+    matches[g] = Array.isArray(raw) ? raw : Object.values(raw);
+  });
+
+  const grid = document.getElementById('grid');
+  let played = 0, goals = 0;
+  const allTeams = [];
+
+  Object.keys(GROUPS).forEach(g => {
+    const ms   = matches[g];
+    const rows = getStandings(g, ms);
+    const tot  = ms.length;
+    const pld  = ms.filter(m => m.homeScore != null && m.awayScore != null).length;
+    const pct  = tot ? Math.round(pld / tot * 100) : 0;
+    played += pld;
+    ms.forEach(m => { if (m.homeScore != null && m.awayScore != null) goals += +m.homeScore + +m.awayScore; });
+    rows.forEach(r => allTeams.push({...r, group:g}));
+
+    const tbody = rows.map((r,i) => {
+      const key = g+'-'+r.name;
+      const changed = prevPts[key] !== undefined && prevPts[key] !== r.pts;
+      prevPts[key] = r.pts;
+      const bg  = i < rowBg.length  ? `background:${rowBg[i]};`  : '';
+      const bar = i < leftBar.length ? `border-left:3px solid ${leftBar[i]};` : 'border-left:3px solid transparent;';
+      const rc  = i===0?'var(--accent)':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--muted)';
+      const dc  = r.dg>0?'var(--green)':r.dg<0?'var(--red)':'var(--muted)';
+      return `<tr class="${changed?'row-flash':''}" style="${bg}${bar}">
+        <td><span style="font-family:'Bebas Neue',cursive;font-size:.95rem;color:${rc}">${i+1}</span></td>
+        <td class="tl" title="${r.name}">${r.name}</td>
+        <td style="font-weight:700;color:var(--green)">${r.pts}</td>
+        <td>${r.g}</td><td style="color:var(--green)">${r.v}</td>
+        <td>${r.n}</td><td style="color:var(--red)">${r.p}</td>
+        <td>${r.gf}</td><td>${r.gs}</td>
+        <td style="color:${dc}">${r.dg>0?'+':''}${r.dg}</td>
+      </tr>`;
+    }).join('');
+
+    let card = document.getElementById('tb-card-'+g);
+    if (!card) { card = document.createElement('div'); card.id='tb-card-'+g; card.className='tb-group-card'; grid.appendChild(card); }
+    card.innerHTML = `
+      <div class="tb-group-header">
+        <div class="tb-group-label">Girone ${g}</div>
+        <div class="tb-progress-wrap">${pld}/${tot}
+          <div class="tb-progress-bar"><div class="tb-progress-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <table class="tb-table">
+        <thead><tr>
+          <th>#</th><th class="tl">Squadra</th>
+          <th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th>
+        </tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
+      <div class="tb-footer">
+        <div class="tb-legend"><div class="tb-legend-dot" style="background:#00c853"></div>1°-5° Qualificati</div>
+        <div class="tb-legend"><div class="tb-legend-dot" style="background:#ffaa00"></div>6° Playoff seste</div>
+      </div>`;
+  });
+
+  // KPI
+  allTeams.sort((a,b) => b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
+  document.getElementById('h-played').textContent = played;
+  document.getElementById('h-goals').textContent  = goals;
+  const colors = ['var(--accent)','#c0c0c0','#cd7f32'];
+  ['h-top3-1','h-top3-2','h-top3-3'].forEach((id,i) => {
+    const el = document.getElementById(id), t = allTeams[i];
+    if (t && t.g > 0) { el.textContent=`${i+1}. ${t.name} — ${t.pts}p`; el.style.color=colors[i]; el.style.fontWeight='600'; }
+    else              { el.textContent='—'; el.style.color='var(--muted)'; el.style.fontWeight='400'; }
+  });
+
+  document.getElementById('last-update').textContent =
+    played > 0 ? 'Aggiornato alle '+new Date().toLocaleTimeString('it-IT') : 'In attesa di risultati...';
+
+  // Render KO bracket
+  renderKODisplay(state ? state.ko : null);
+}
+
+// ── Initial render with blank data so grid is never empty ──
+render(null);
+renderKODisplay(null);
+
+// ── Tab switching ──
+function switchTab(tab) {
+  document.getElementById('section-gironi').style.display      = tab==='gironi'      ? '' : 'none';
+  document.getElementById('section-eliminatorie').style.display = tab==='eliminatorie' ? '' : 'none';
+  const tG = document.getElementById('tab-gironi');
+  const tE = document.getElementById('tab-eliminatorie');
+  const activeStyle = 'font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:.95rem;padding:6px 16px;border:1px solid var(--green);background:var(--green);color:#000;border-radius:5px;cursor:pointer;white-space:nowrap;';
+  const inactiveStyle = 'font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:.95rem;padding:6px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:5px;cursor:pointer;white-space:nowrap;';
+  tG.style.cssText = tab==='gironi'      ? activeStyle : inactiveStyle;
+  tE.style.cssText = tab==='eliminatorie' ? activeStyle : inactiveStyle;
+}
+
+// ── KO bracket display (read-only) ──
+function getWinner(m){ if(!m||m.sa==null||m.sb==null)return null; return m.sa>m.sb?m.a:m.sb>m.sa?m.b:null; }
+function getLoser(m){  if(!m||m.sa==null||m.sb==null)return null; return m.sa>m.sb?m.b:m.sb>m.sa?m.a:null; }
+
+function renderKODisplay(ko) {
+  const el = document.getElementById('section-eliminatorie');
+  if (!el) return;
+
+  if (!ko || !ko.r32 || !ko.r32[0] || !ko.r32[0].a) {
+    el.innerHTML = `<div style="padding:48px 24px;text-align:center;color:var(--muted)">
+      <div style="font-size:2.5rem;margin-bottom:14px">⏳</div>
+      <div style="font-family:'Bebas Neue',cursive;font-size:1.5rem;color:var(--text);margin-bottom:8px">Fase a gironi in corso</div>
+      <div style="font-size:0.88rem">Le eliminatorie verranno mostrate al termine di tutti gli incontri dei gironi.</div>
+    </div>`;
+    return;
+  }
+
+  function toArray(v){ return Array.isArray(v)?v:Object.values(v||{}); }
+
+  function teamRow(m, side) {
+    const t   = side==='a'?m.a:m.b;
+    const s   = side==='a'?m.sa:m.sb;
+    const os  = side==='a'?m.sb:m.sa;
+    const hasRes = m.sa!=null && m.sb!=null;
+    const isW = hasRes && +s > +os;
+    const isL = hasRes && +s < +os;
+    const name = t ? t.name : '—';
+    const grp  = t ? t.group : '';
+    return `<div class="ko-team-row ${isW?'winner':''} ${isL?'loser':''}">
+      ${grp?`<span class="ko-group-badge">${grp}</span>`:''}
+      <span class="ko-team-name" title="${name}">${name}</span>
+      <span class="ko-score">${s!=null?s:''}</span>
+    </div>`;
+  }
+
+  function matchCard(m, label) {
+    const campo = m.campo || '';
+    return `<div class="ko-match">
+      <div class="ko-match-header">${label}</div>
+      ${teamRow(m,'a')}
+      ${teamRow(m,'b')}
+      ${campo ? `<div class="ko-campo-row">🏟 ${campo}</div>` : ''}
+    </div>`;
+  }
+
+  function roundSection(title, matches) {
+    const arr = toArray(matches).filter(m=>m.a||m.b);
+    if (!arr.length) return '';
+    return `<div class="ko-round-wrap">
+      <div class="ko-round-title">${title}</div>
+      <div class="ko-grid">${arr.map((m,i)=>matchCard(m,`Gara ${i+1}`)).join('')}</div>
+    </div>`;
+  }
+
+  const finalM  = ko.final || {};
+  const thirdM  = ko.third || {};
+  const champ   = getWinner(finalM);
+  const champHtml = champ ? `<div class="champ-banner">
+    <div style="font-size:1.8rem;margin-bottom:6px">🏆</div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:2.2rem;color:var(--accent);letter-spacing:3px">${champ.name}</div>
+    <div style="font-size:0.82rem;color:var(--muted);margin-top:3px">CAMPIONE DEL TORNEO 2026</div>
+  </div>` : '';
+
+  el.innerHTML = champHtml
+    + roundSection('⚔️ Sedicesimi di Finale', toArray(ko.r32))
+    + roundSection('🔰 Ottavi di Finale', toArray(ko.r16))
+    + roundSection('⚡ Quarti di Finale', toArray(ko.qf))
+    + roundSection('🔥 Semifinali', toArray(ko.sf))
+    + `<div class="ko-round-wrap">
+        <div class="ko-round-title">🏆 Finale &amp; 3° Posto</div>
+        <div class="ko-grid">
+          ${matchCard(finalM,'🏆 Finale')}
+          ${matchCard(thirdM,'🥉 3° Posto')}
+        </div>
+       </div>`;
+}
+
+// ── Firebase listener — fires immediately and on every change ──
+const connBadge = document.getElementById('conn-badge');
+onValue(ref(db, 'torneo'), snapshot => {
+  connBadge.textContent = '🟢 Connesso';
+  connBadge.className   = 'conn-badge conn-ok';
+  render(snapshot.val());
+}, err => {
+  connBadge.textContent = '🔴 Offline';
+  connBadge.className   = 'conn-badge conn-err';
+  console.warn('Firebase error:', err);
+});
+</script>
+</body>
+</html>
