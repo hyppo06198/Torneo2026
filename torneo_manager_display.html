@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabellone Live — Torneo Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#00c853;--green-dark:#009624;--pitch:#1a472a;--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#7d8590;--accent:#f0e130;--red:#ff4444;--orange:#ffaa00;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);}
+header{background:linear-gradient(135deg,var(--pitch) 0%,#0a2e1a 100%);border-bottom:3px solid var(--green);padding:14px 28px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.logo{font-family:"Bebas Neue",cursive;font-size:2rem;color:var(--accent);letter-spacing:2px;line-height:1;}
+.logo span{color:var(--green);}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.live-badge{display:flex;align-items:center;gap:6px;background:rgba(255,68,68,.12);border:1px solid rgba(255,68,68,.4);color:#ff6b6b;padding:5px 14px;border-radius:20px;font-size:.8rem;font-weight:600;letter-spacing:1px;}
+.live-dot{width:8px;height:8px;background:#ff4444;border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.7);}}
+.last-update{font-size:.72rem;color:var(--muted);font-style:italic;}
+.conn-badge{font-size:.68rem;padding:3px 10px;border-radius:12px;font-weight:600;letter-spacing:.5px;}
+.conn-ok{background:rgba(0,200,83,.15);color:var(--green);border:1px solid rgba(0,200,83,.3);}
+.conn-err{background:rgba(255,68,68,.15);color:#ff6b6b;border:1px solid rgba(255,68,68,.3);}
+.kpi-bar{display:flex;gap:28px;padding:10px 28px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+.kpi-item{text-align:center;font-size:.75rem;color:var(--muted);}
+.kpi-item strong{color:var(--green);font-size:1.15rem;display:block;font-family:"Bebas Neue",cursive;}
+.kpi-top3{display:flex;flex-direction:column;gap:2px;font-size:.72rem;color:var(--muted);border-left:1px solid var(--border);padding-left:20px;margin-left:8px;}
+.kpi-top3-title{color:var(--accent);font-weight:700;letter-spacing:1px;font-size:.68rem;text-transform:uppercase;margin-bottom:2px;}
+.container{padding:18px 24px;max-width:1600px;margin:0 auto;}
+.tabellone-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;}
+.tb-group-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.tb-group-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(90deg,var(--pitch),#0d2b1a);border-bottom:2px solid var(--green);}
+.tb-group-label{font-family:"Bebas Neue",cursive;font-size:1.4rem;letter-spacing:2px;color:var(--accent);}
+.tb-progress-wrap{font-size:.72rem;color:var(--muted);text-align:right;}
+.tb-progress-bar{width:70px;height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
+.tb-progress-fill{height:4px;background:var(--green);border-radius:2px;transition:width .6s ease;}
+.tb-table{width:100%;border-collapse:collapse;font-size:.8rem;table-layout:fixed;}
+.tb-table thead th{padding:5px 7px;background:rgba(255,255,255,.03);color:var(--muted);text-align:center;font-size:.62rem;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.tb-table thead th.tl{text-align:left;padding-left:9px;width:42%;}
+.tb-table tbody tr{border-bottom:1px solid rgba(48,54,61,.5);transition:background .4s;}
+.tb-table tbody tr:last-child{border-bottom:none;}
+.tb-table tbody td{padding:7px 7px;text-align:center;font-variant-numeric:tabular-nums;}
+.tb-table tbody td.tl{text-align:left;padding-left:9px;font-size:.78rem;font-weight:500;}
+.tb-footer{padding:7px 10px;border-top:1px solid var(--border);display:flex;gap:10px;font-size:.67rem;color:var(--muted);background:rgba(0,0,0,.15);flex-wrap:wrap;}
+.tb-legend{display:flex;align-items:center;gap:4px;}
+.tb-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+@keyframes rowFlash{0%{background:rgba(0,200,83,.3);}100%{background:transparent;}}
+.row-flash{animation:rowFlash 1.2s ease;}
+.waiting{padding:60px 24px;text-align:center;color:var(--muted);}
+.waiting .icon{font-size:3rem;margin-bottom:14px;}
+.waiting h2{font-family:"Bebas Neue",cursive;font-size:1.6rem;color:var(--text);margin-bottom:8px;letter-spacing:1px;}
+.waiting p{font-size:.88rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header>
+  <div><div class="logo">Torneo <span>Manager</span></div></div>
+  <div class="header-right">
+    <span class="conn-badge conn-ok" id="conn-badge">🔴 Connessione...</span>
+    <span class="last-update" id="last-update">In attesa di dati...</span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+</header>
+
+<div class="kpi-bar">
+  <div class="kpi-item"><strong id="h-groups">—</strong>Gironi</div>
+  <div class="kpi-item"><strong id="h-teams">—</strong>Squadre</div>
+  <div class="kpi-item"><strong id="h-played">0</strong>Partite giocate</div>
+  <div class="kpi-item"><strong id="h-goals">0</strong>Goal totali</div>
+  <div class="kpi-top3">
+    <div class="kpi-top3-title">Top 3</div>
+    <span id="h-top3-1" style="color:var(--muted)">—</span>
+    <span id="h-top3-2" style="color:var(--muted)">—</span>
+    <span id="h-top3-3" style="color:var(--muted)">—</span>
+  </div>
+</div>
+
+<div class="container">
+  <div id="grid"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB8i5p62pV0YhvrXRKLpqZohgrrtBzGkPU",
+  authDomain: "tabellone-risultati.firebaseapp.com",
+  databaseURL: "https://tabellone-risultati-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tabellone-risultati",
+  storageBucket: "tabellone-risultati.firebasestorage.app",
+  messagingSenderId: "302458277734",
+  appId: "1:302458277734:web:4a35ba62b9f78b29a182a7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+const rowBg   = ["rgba(0,200,83,0.18)","rgba(0,200,83,0.12)","rgba(0,200,83,0.08)","rgba(0,200,83,0.05)","rgba(0,200,83,0.03)","rgba(255,170,0,0.10)"];
+const leftBar = ["#00c853","#00c853","#4caf50","#81c784","#a5d6a7","#ffaa00"];
+let prevPts = {};
+
+// ── Standings from match list ──
+function getStandings(teams, matches) {
+  const tbl = {};
+  teams.forEach(t => { tbl[t] = {pts:0,g:0,v:0,n:0,p:0,gf:0,gs:0}; });
+  (matches || []).forEach(m => {
+    if (m.homeScore == null || m.awayScore == null) return;
+    const h = +m.homeScore, a = +m.awayScore;
+    if (!tbl[m.home] || !tbl[m.away]) return;
+    tbl[m.home].g++; tbl[m.away].g++;
+    tbl[m.home].gf += h; tbl[m.home].gs += a;
+    tbl[m.away].gf += a; tbl[m.away].gs += h;
+    if (h > a)      { tbl[m.home].v++; tbl[m.home].pts += 3; tbl[m.away].p++; }
+    else if (a > h) { tbl[m.away].v++; tbl[m.away].pts += 3; tbl[m.home].p++; }
+    else            { tbl[m.home].n++; tbl[m.away].n++; tbl[m.home].pts++; tbl[m.away].pts++; }
+  });
+  return Object.entries(tbl)
+    .map(([name,s]) => ({name,...s,dg:s.gf-s.gs}))
+    .sort((a,b) => b.pts-a.pts || b.dg-a.dg || b.gf-a.gf || a.name.localeCompare(b.name));
+}
+
+function toArr(v) { return Array.isArray(v) ? v : Object.values(v || {}); }
+
+// ── Main render ──
+function render(data) {
+  const grid = document.getElementById("grid");
+
+  // Not generated yet
+  if (!data || !data.generated || !data.appConfig || !data.appConfig.groups || !data.appConfig.groups.length) {
+    grid.innerHTML = `<div class="waiting">
+      <div class="icon">📋</div>
+      <h2>Nessun torneo generato</h2>
+      <p>Apri il file <strong style="color:var(--accent)">Torneo Manager</strong>,<br>
+         configura i gironi e clicca <strong style="color:var(--green)">💾 Salva</strong>.<br>
+         Questa pagina si aggiornerà automaticamente.</p>
+    </div>`;
+    document.getElementById("last-update").textContent = "In attesa di dati...";
+    return;
+  }
+
+  const { appConfig, state } = data;
+  const groups = appConfig.groups;
+  let played = 0, goals = 0, totalTeams = 0;
+  const allTeams = [];
+
+  grid.innerHTML = "";
+
+  groups.forEach(grp => {
+    const raw = state && state.matches && state.matches[grp.id];
+    const ms  = raw ? toArr(raw) : [];
+    const rows = getStandings(grp.teams, ms);
+    const tot = ms.length;
+    const pld = ms.filter(m => m.homeScore != null && m.awayScore != null).length;
+    const pct = tot ? Math.round(pld / tot * 100) : 0;
+    played     += pld;
+    totalTeams += grp.teams.length;
+    ms.forEach(m => { if (m.homeScore != null && m.awayScore != null) goals += +m.homeScore + +m.awayScore; });
+    rows.forEach(r => allTeams.push({...r, groupName: grp.name}));
+
+    const tbody = rows.map((r,i) => {
+      const key     = grp.id + "-" + r.name;
+      const changed = prevPts[key] !== undefined && prevPts[key] !== r.pts;
+      prevPts[key]  = r.pts;
+      const bg  = i < rowBg.length   ? `background:${rowBg[i]};`  : "";
+      const bar = i < leftBar.length  ? `border-left:3px solid ${leftBar[i]};` : "border-left:3px solid transparent;";
+      const rc  = i===0?"var(--accent)":i===1?"#c0c0c0":i===2?"#cd7f32":"var(--muted)";
+      const dc  = r.dg>0?"var(--green)":r.dg<0?"var(--red)":"var(--muted)";
+      return `<tr class="${changed?"row-flash":""}" style="${bg}${bar}">
+        <td><span style="font-family:'Bebas Neue',cursive;font-size:.95rem;color:${rc}">${i+1}</span></td>
+        <td class="tl" title="${r.name}">${r.name}</td>
+        <td style="font-weight:700;color:var(--green)">${r.pts}</td>
+        <td>${r.g}</td><td style="color:var(--green)">${r.v}</td>
+        <td>${r.n}</td><td style="color:var(--red)">${r.p}</td>
+        <td>${r.gf}</td><td>${r.gs}</td>
+        <td style="color:${dc}">${r.dg>0?"+":""}${r.dg}</td>
+      </tr>`;
+    }).join("");
+
+    // qualifier lines depend on how many teams qualify — default: top 2 or custom
+    const card = document.createElement("div");
+    card.className = "tb-group-card";
+    card.innerHTML = `
+      <div class="tb-group-header">
+        <div class="tb-group-label">${grp.name}</div>
+        <div class="tb-progress-wrap">${pld}/${tot}
+          <div class="tb-progress-bar"><div class="tb-progress-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <table class="tb-table">
+        <thead><tr>
+          <th>#</th><th class="tl">Squadra</th>
+          <th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th>
+        </tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
+      <div class="tb-footer">
+        <div class="tb-legend"><div class="tb-legend-dot" style="background:#00c853"></div>${grp.homeAway?"Andata &amp; Ritorno":"Solo Andata"} · ${tot} partite</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  // KPI
+  allTeams.sort((a,b) => b.pts-a.pts||b.dg-a.dg||b.gf-a.gf);
+  document.getElementById("h-groups").textContent  = groups.length;
+  document.getElementById("h-teams").textContent   = totalTeams;
+  document.getElementById("h-played").textContent  = played;
+  document.getElementById("h-goals").textContent   = goals;
+  const colors = ["var(--accent)","#c0c0c0","#cd7f32"];
+  ["h-top3-1","h-top3-2","h-top3-3"].forEach((id,i) => {
+    const el = document.getElementById(id), t = allTeams[i];
+    if (t && t.g > 0) { el.textContent = `${i+1}. ${t.name} — ${t.pts}p`; el.style.color = colors[i]; el.style.fontWeight = "600"; }
+    else              { el.textContent = "—"; el.style.color = "var(--muted)"; el.style.fontWeight = "400"; }
+  });
+
+  document.getElementById("last-update").textContent =
+    played > 0 ? "Aggiornato alle " + new Date().toLocaleTimeString("it-IT") : "In attesa di risultati...";
+}
+
+// ── Firebase realtime listener ──
+const connBadge = document.getElementById("conn-badge");
+onValue(ref(db, "torneoManager"), snapshot => {
+  connBadge.textContent = "🟢 Connesso";
+  connBadge.className   = "conn-badge conn-ok";
+  render(snapshot.val());
+}, err => {
+  connBadge.textContent = "🔴 Offline";
+  connBadge.className   = "conn-badge conn-err";
+  console.warn("Firebase error:", err);
+});
+</script>
+</body>
+</html>
