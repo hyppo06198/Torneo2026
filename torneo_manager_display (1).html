@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabellone Live — Torneo Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#00c853;--green-dark:#009624;--pitch:#1a472a;--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#7d8590;--accent:#f0e130;--red:#ff4444;--orange:#ffaa00;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--pitch) 0%,#0a2e1a 100%);border-bottom:3px solid var(--green);padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
+.logo{font-family:"Bebas Neue",cursive;font-size:1.9rem;color:var(--accent);letter-spacing:2px;line-height:1;}
+.logo span{color:var(--green);}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,68,68,.12);border:1px solid rgba(255,68,68,.4);color:#ff6b6b;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;letter-spacing:1px;}
+.live-dot{width:7px;height:7px;background:#ff4444;border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.7);}}
+.last-update{font-size:.7rem;color:var(--muted);font-style:italic;}
+.conn-badge{font-size:.67rem;padding:3px 9px;border-radius:12px;font-weight:600;}
+.conn-ok{background:rgba(0,200,83,.15);color:var(--green);border:1px solid rgba(0,200,83,.3);}
+.conn-err{background:rgba(255,68,68,.15);color:#ff6b6b;border:1px solid rgba(255,68,68,.3);}
+
+/* KPI */
+.kpi-bar{display:flex;gap:20px;padding:9px 24px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+.kpi-item{text-align:center;font-size:.72rem;color:var(--muted);}
+.kpi-item strong{color:var(--green);font-size:1.05rem;display:block;font-family:"Bebas Neue",cursive;}
+
+/* NAV bar (view switcher) */
+.view-bar{display:flex;align-items:center;gap:8px;padding:10px 24px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.view-btn{font-family:"Bebas Neue",cursive;letter-spacing:1px;font-size:.9rem;padding:5px 14px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:5px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.view-btn:hover{color:var(--text);border-color:var(--green);}
+.view-btn.active{background:var(--green);color:#000;border-color:var(--green);}
+.view-btn.accent{background:var(--accent);color:#000;border-color:var(--accent);}
+.group-filter-label{font-size:.75rem;color:var(--muted);margin-right:4px;}
+
+/* CONTAINER */
+.container{padding:18px 24px;max-width:1400px;margin:0 auto;}
+
+/* GROUP PICKER SCREEN */
+.picker-screen{padding:40px 24px;text-align:center;}
+.picker-title{font-family:"Bebas Neue",cursive;font-size:2rem;color:var(--accent);letter-spacing:2px;margin-bottom:6px;}
+.picker-sub{font-size:.88rem;color:var(--muted);margin-bottom:32px;}
+.picker-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-width:700px;margin:0 auto 28px;}
+.picker-btn{padding:16px 24px;min-width:160px;background:var(--surface);border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .18s;text-align:center;}
+.picker-btn:hover{border-color:var(--green);background:rgba(0,200,83,.06);}
+.picker-btn .pb-name{font-family:"Bebas Neue",cursive;font-size:1.4rem;color:var(--accent);letter-spacing:1px;display:block;}
+.picker-btn .pb-teams{font-size:.75rem;color:var(--muted);margin-top:3px;}
+.picker-btn .pb-progress{font-size:.72rem;color:var(--green);margin-top:3px;}
+.picker-all{background:transparent;border:1px dashed var(--border);color:var(--muted);padding:10px 22px;border-radius:8px;cursor:pointer;font-size:.85rem;transition:all .15s;}
+.picker-all:hover{border-color:var(--green);color:var(--text);}
+
+/* GROUP CARD */
+.group-card-wrap{margin-bottom:0;}
+.tb-group-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-width:760px;margin:0 auto;}
+.tb-group-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(90deg,var(--pitch),#0d2b1a);border-bottom:2px solid var(--green);}
+.tb-group-label{font-family:"Bebas Neue",cursive;font-size:1.5rem;letter-spacing:2px;color:var(--accent);}
+.tb-progress-wrap{font-size:.72rem;color:var(--muted);text-align:right;}
+.tb-progress-bar{width:70px;height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
+.tb-progress-fill{height:4px;background:var(--green);border-radius:2px;transition:width .6s;}
+
+/* STANDINGS TABLE */
+.tb-table{width:100%;border-collapse:collapse;font-size:.82rem;table-layout:fixed;}
+.tb-table thead th{padding:6px 7px;background:rgba(255,255,255,.03);color:var(--muted);text-align:center;font-size:.63rem;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.tb-table thead th.tl{text-align:left;padding-left:11px;width:40%;}
+.tb-table tbody tr{border-bottom:1px solid rgba(48,54,61,.5);transition:background .4s;}
+.tb-table tbody tr:last-child{border-bottom:none;}
+.tb-table tbody td{padding:8px 7px;text-align:center;font-variant-numeric:tabular-nums;}
+.tb-table tbody td.tl{text-align:left;padding-left:11px;font-size:.8rem;font-weight:500;}
+@keyframes rowFlash{0%{background:rgba(0,200,83,.3);}100%{background:transparent;}}
+.row-flash{animation:rowFlash 1.2s ease;}
+
+/* MATCH LIST */
+.incontri-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:transparent;border:none;border-top:1px solid var(--border);color:var(--muted);font-size:.78rem;font-family:"DM Sans",sans-serif;cursor:pointer;transition:background .15s;}
+.incontri-toggle:hover{background:rgba(0,200,83,.04);color:var(--text);}
+.incontri-toggle .arrow{font-size:.7rem;transition:transform .2s;display:inline-block;}
+.incontri-toggle.open .arrow{transform:rotate(180deg);}
+.incontri-list{display:none;border-top:1px solid var(--border);max-height:400px;overflow-y:auto;}
+.incontri-list.open{display:block;}
+.incontri-list::-webkit-scrollbar{width:4px;}
+.incontri-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.match-item{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid rgba(48,54,61,.4);font-size:.78rem;}
+.match-item:last-child{border-bottom:none;}
+.match-item:hover{background:rgba(255,255,255,.02);}
+.match-home{text-align:right;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.match-away{text-align:left;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.match-score{text-align:center;font-family:"Bebas Neue",cursive;font-size:1.05rem;color:var(--accent);white-space:nowrap;min-width:40px;flex-shrink:0;}
+.match-score.pending{color:var(--muted);font-size:.78rem;font-family:"DM Sans",sans-serif;}
+.tb-footer{padding:7px 12px;border-top:1px solid var(--border);font-size:.67rem;color:var(--muted);background:rgba(0,0,0,.15);}
+
+/* ALL-GROUPS GRID */
+.all-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;}
+.all-grid .tb-group-card{max-width:none;margin:0;}
+
+/* WAITING */
+.waiting{padding:60px 24px;text-align:center;color:var(--muted);}
+.waiting .icon{font-size:3rem;margin-bottom:14px;}
+.waiting h2{font-family:"Bebas Neue",cursive;font-size:1.6rem;color:var(--text);margin-bottom:8px;letter-spacing:1px;}
+.waiting p{font-size:.88rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header>
+  <div><div class="logo">Torneo <span>Manager</span></div></div>
+  <div class="header-right">
+    <span class="conn-badge conn-ok" id="conn-badge">🔴 Connessione...</span>
+    <span class="last-update" id="last-update">In attesa di dati...</span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+</header>
+
+<div class="kpi-bar">
+  <div class="kpi-item"><strong id="h-groups">—</strong>Gironi</div>
+  <div class="kpi-item"><strong id="h-teams">—</strong>Squadre</div>
+  <div class="kpi-item"><strong id="h-played">0</strong>Giocate</div>
+  <div class="kpi-item"><strong id="h-goals">0</strong>Goal</div>
+</div>
+
+<!-- View switcher bar (hidden until tournament generated) -->
+<div class="view-bar" id="view-bar" style="display:none">
+  <span class="group-filter-label">Vista:</span>
+  <button class="view-btn accent" id="btn-picker" onclick="showPicker()">🔀 Cambia Girone</button>
+  <button class="view-btn" id="btn-all" onclick="showAll()">📋 Tutti i Gironi</button>
+</div>
+
+<div class="container" id="main-container">
+  <!-- Content injected here -->
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB8i5p62pV0YhvrXRKLpqZohgrrtBzGkPU",
+  authDomain: "tabellone-risultati.firebaseapp.com",
+  databaseURL: "https://tabellone-risultati-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tabellone-risultati",
+  storageBucket: "tabellone-risultati.firebasestorage.app",
+  messagingSenderId: "302458277734",
+  appId: "1:302458277734:web:4a35ba62b9f78b29a182a7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ── State ──
+let lastData  = null;
+let currentView = "picker"; // "picker" | "group:<id>" | "all"
+let prevPts   = {};
+
+const rowBg   = ["rgba(0,200,83,0.18)","rgba(0,200,83,0.12)","rgba(0,200,83,0.08)","rgba(0,200,83,0.05)","rgba(0,200,83,0.03)","rgba(255,170,0,0.10)"];
+const leftBar = ["#00c853","#00c853","#4caf50","#81c784","#a5d6a7","#ffaa00"];
+
+function toArr(v) { return Array.isArray(v) ? v : Object.values(v || {}); }
+
+// ── Standings ──
+function getStandings(teams, matches) {
+  const tbl = {};
+  teams.forEach(t => { tbl[t] = {pts:0,g:0,v:0,n:0,p:0,gf:0,gs:0}; });
+  (matches || []).forEach(m => {
+    if (m.homeScore == null || m.awayScore == null) return;
+    const h = +m.homeScore, a = +m.awayScore;
+    if (!tbl[m.home] || !tbl[m.away]) return;
+    tbl[m.home].g++; tbl[m.away].g++;
+    tbl[m.home].gf += h; tbl[m.home].gs += a;
+    tbl[m.away].gf += a; tbl[m.away].gs += h;
+    if (h > a)      { tbl[m.home].v++; tbl[m.home].pts += 3; tbl[m.away].p++; }
+    else if (a > h) { tbl[m.away].v++; tbl[m.away].pts += 3; tbl[m.home].p++; }
+    else            { tbl[m.home].n++; tbl[m.away].n++; tbl[m.home].pts++; tbl[m.away].pts++; }
+  });
+  return Object.entries(tbl)
+    .map(([name,s]) => ({name,...s,dg:s.gf-s.gs}))
+    .sort((a,b) => b.pts-a.pts||b.dg-a.dg||b.gf-a.gf||a.name.localeCompare(b.name));
+}
+
+// ── Build single group card HTML ──
+function buildGroupCard(grp, ms, id_suffix) {
+  const rows = getStandings(grp.teams, ms);
+  const tot  = ms.length;
+  const pld  = ms.filter(m => m.homeScore != null && m.awayScore != null).length;
+  const pct  = tot ? Math.round(pld / tot * 100) : 0;
+
+  const tbody = rows.map((r,i) => {
+    const key     = grp.id + "-" + r.name;
+    const changed = prevPts[key] !== undefined && prevPts[key] !== r.pts;
+    prevPts[key]  = r.pts;
+    const bg  = i < rowBg.length   ? `background:${rowBg[i]};`  : "";
+    const bar = i < leftBar.length  ? `border-left:3px solid ${leftBar[i]};` : "border-left:3px solid transparent;";
+    const rc  = i===0?"var(--accent)":i===1?"#c0c0c0":i===2?"#cd7f32":"var(--muted)";
+    const dc  = r.dg>0?"var(--green)":r.dg<0?"var(--red)":"var(--muted)";
+    return `<tr class="${changed?"row-flash":""}" style="${bg}${bar}">
+      <td><span style="font-family:'Bebas Neue',cursive;font-size:.95rem;color:${rc}">${i+1}</span></td>
+      <td class="tl" title="${r.name}">${r.name}</td>
+      <td style="font-weight:700;color:var(--green)">${r.pts}</td>
+      <td>${r.g}</td><td style="color:var(--green)">${r.v}</td>
+      <td>${r.n}</td><td style="color:var(--red)">${r.p}</td>
+      <td>${r.gf}</td><td>${r.gs}</td>
+      <td style="color:${dc}">${r.dg>0?"+":""}${r.dg}</td>
+    </tr>`;
+  }).join("");
+
+  const matchRows = ms.map(m => {
+    const played = m.homeScore != null && m.awayScore != null;
+    const hWin   = played && +m.homeScore > +m.awayScore;
+    const aWin   = played && +m.awayScore > +m.homeScore;
+    return `<div class="match-item">
+      <div class="match-home" style="color:${hWin?"var(--green)":"var(--text)"}" title="${m.home}">${m.home}</div>
+      <div class="match-score ${played?"":"pending"}">${played ? m.homeScore+" : "+m.awayScore : "vs"}</div>
+      <div class="match-away" style="color:${aWin?"var(--green)":"var(--text)"}" title="${m.away}">${m.away}</div>
+    </div>`;
+  }).join("");
+
+  const uid = grp.id + (id_suffix || "");
+  return `<div class="tb-group-card">
+    <div class="tb-group-header">
+      <div class="tb-group-label">${grp.name}</div>
+      <div class="tb-progress-wrap">${pld}/${tot}
+        <div class="tb-progress-bar"><div class="tb-progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>
+    <table class="tb-table">
+      <thead><tr>
+        <th>#</th><th class="tl">Squadra</th>
+        <th>Pts</th><th>G</th><th>V</th><th>N</th><th>P</th><th>GF</th><th>GS</th><th>DG</th>
+      </tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>
+    <div class="tb-footer">${grp.homeAway?"Andata &amp; Ritorno":"Solo Andata"} · ${tot} partite</div>
+    <button class="incontri-toggle" id="itbtn-${uid}" onclick="toggleIncontri('${uid}')">
+      <span id="itlbl-${uid}">Mostra incontri</span>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="incontri-list" id="itlist-${uid}">${matchRows}</div>
+  </div>`;
+}
+
+// ── Toggle incontri ──
+window.toggleIncontri = function(uid) {
+  const btn  = document.getElementById("itbtn-" + uid);
+  const list = document.getElementById("itlist-" + uid);
+  if (!btn || !list) return;
+  const open = list.classList.toggle("open");
+  btn.classList.toggle("open", open);
+  document.getElementById("itlbl-" + uid).textContent = open ? "Nascondi incontri" : "Mostra incontri";
+};
+
+// ── Update KPI bar ──
+function updateKPI(groups, data) {
+  let played = 0, goals = 0, totalTeams = 0;
+  groups.forEach(grp => {
+    totalTeams += grp.teams.length;
+    const ms = toArr((data.state && data.state.matches && data.state.matches[grp.id]) || []);
+    ms.forEach(m => {
+      if (m.homeScore != null && m.awayScore != null) { played++; goals += +m.homeScore + +m.awayScore; }
+    });
+  });
+  document.getElementById("h-groups").textContent = groups.length;
+  document.getElementById("h-teams").textContent  = totalTeams;
+  document.getElementById("h-played").textContent = played;
+  document.getElementById("h-goals").textContent  = goals;
+  document.getElementById("last-update").textContent =
+    played > 0 ? "Aggiornato alle " + new Date().toLocaleTimeString("it-IT") : "In attesa di risultati...";
+}
+
+// ── PICKER SCREEN ──
+function showPicker() {
+  currentView = "picker";
+  updateViewBar(false);
+  if (!lastData || !lastData.generated) return;
+  const groups = lastData.appConfig.groups;
+  const cont = document.getElementById("main-container");
+  const cards = groups.map(grp => {
+    const ms  = toArr((lastData.state && lastData.state.matches && lastData.state.matches[grp.id]) || []);
+    const pld = ms.filter(m => m.homeScore != null && m.awayScore != null).length;
+    const tot = ms.length;
+    return `<button class="picker-btn" onclick="showGroup('${grp.id}')">
+      <span class="pb-name">${grp.name}</span>
+      <span class="pb-teams">${grp.teams.length} squadre</span>
+      <span class="pb-progress">${pld}/${tot} partite giocate</span>
+    </button>`;
+  }).join("");
+  cont.innerHTML = `<div class="picker-screen">
+    <div class="picker-title">Seleziona il tuo girone</div>
+    <div class="picker-sub">Scegli il girone per vedere la classifica e i tuoi incontri.</div>
+    <div class="picker-grid">${cards}</div>
+    <button class="picker-all" onclick="showAll()">📋 Vedi tutti i gironi</button>
+  </div>`;
+}
+
+// ── SINGLE GROUP VIEW ──
+window.showGroup = function(id) {
+  currentView = "group:" + id;
+  updateViewBar(true);
+  if (!lastData) return;
+  const grp = lastData.appConfig.groups.find(g => g.id === id);
+  if (!grp) return;
+  const ms = toArr((lastData.state && lastData.state.matches && lastData.state.matches[id]) || []);
+  const cont = document.getElementById("main-container");
+  cont.innerHTML = `<div style="margin-top:4px">${buildGroupCard(grp, ms, "-single")}</div>`;
+};
+
+// ── ALL GROUPS VIEW ──
+window.showAll = function() {
+  currentView = "all";
+  updateViewBar(true);
+  if (!lastData) return;
+  const groups = lastData.appConfig.groups;
+  const cont = document.getElementById("main-container");
+  cont.innerHTML = `<div class="all-grid">${
+    groups.map(grp => {
+      const ms = toArr((lastData.state && lastData.state.matches && lastData.state.matches[grp.id]) || []);
+      return buildGroupCard(grp, ms, "-all");
+    }).join("")
+  }</div>`;
+};
+
+function updateViewBar(show) {
+  document.getElementById("view-bar").style.display = show ? "flex" : "none";
+}
+
+// ── MAIN RENDER (called on every Firebase update) ──
+function render(data) {
+  const cont = document.getElementById("main-container");
+
+  if (!data || !data.generated || !data.appConfig || !data.appConfig.groups || !data.appConfig.groups.length) {
+    updateViewBar(false);
+    cont.innerHTML = `<div class="waiting">
+      <div class="icon">📋</div>
+      <h2>Nessun torneo generato</h2>
+      <p>Apri il file <strong style="color:var(--accent)">Torneo Manager</strong>,<br>
+         configura i gironi e clicca <strong style="color:var(--green)">💾 Salva</strong>.<br>
+         Questa pagina si aggiornerà automaticamente.</p>
+    </div>`;
+    document.getElementById("last-update").textContent = "In attesa di dati...";
+    return;
+  }
+
+  lastData = data;
+  updateKPI(data.appConfig.groups, data);
+
+  // Re-render current view
+  if (currentView === "picker") {
+    showPicker();
+  } else if (currentView.startsWith("group:")) {
+    showGroup(currentView.slice(6));
+  } else {
+    showAll();
+  }
+}
+
+// ── Firebase listener ──
+const connBadge = document.getElementById("conn-badge");
+onValue(ref(db, "torneoManager"), snapshot => {
+  connBadge.textContent = "🟢 Connesso";
+  connBadge.className   = "conn-badge conn-ok";
+  render(snapshot.val());
+}, err => {
+  connBadge.textContent = "🔴 Offline";
+  connBadge.className   = "conn-badge conn-err";
+  console.warn("Firebase error:", err);
+});
+</script>
+</body>
+</html>
